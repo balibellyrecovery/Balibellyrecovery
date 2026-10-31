@@ -1,5 +1,5 @@
-const $=id=>document.getElementById(id);let articles=[];let settings={};const APIKEY='bbrCmsApi';
-function api(){return(localStorage.getItem(APIKEY)||$('api-url').value||'').replace(/\/$/,'')}
+const $=id=>document.getElementById(id);let articles=[];let settings={};const APIKEY='bbrCmsApi';const DEFAULT_API='https://api.balibellyrecovery.com';
+function api(){return(localStorage.getItem(APIKEY)||$('api-url')?.value||DEFAULT_API).replace(/\/$/,'')}
 function note(s,error=false){const n=$('notice');n.hidden=false;n.textContent=s;n.className='notice'+(error?' error':'');window.scrollTo({top:0,behavior:'smooth'})}
 function show(v){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id==='view-'+v));document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.view===v));$('page-title').textContent=({dashboard:'Dashboard',articles:'Artikel Blog',editor:'Tulis Artikel',media:'Media / Gambar',promotions:'Pengaturan Promo',settings:'Pengaturan'})[v]||v}
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>show(b.dataset.view));document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{if(b.dataset.go==='editor')clearEditor();show(b.dataset.go)});
@@ -11,7 +11,7 @@ function clearEditor(){['original-slug','title','slug','excerpt','content','seoT
 function editArticle(slug){const a=articles.find(x=>x.slug===slug);if(!a)return;show('editor');$('editor-title').textContent='Edit Artikel';$('original-slug').value=a.slug||'';$('title').value=a.title||'';$('slug').value=a.slug||'';$('excerpt').value=a.excerpt||'';$('content').value=a.content||'';$('seoTitle').value=a.seoTitle||'';$('keyword').value=a.focusKeyword||'';$('meta').value=a.metaDescription||'';$('category').value=a.category||'';$('language').value=a.language||'en';$('author').value=a.author||'';$('reviewer').value=a.reviewer||'';$('image').value=a.image||'';$('imageAlt').value=a.imageAlt||'';$('medical').checked=!!a.medicalReviewed;preview()}
 $('title').addEventListener('input',()=>{if(!$('slug').dataset.edited)$('slug').value=slugify($('title').value);if(!$('seoTitle').value)$('seoTitle').value=$('title').value;preview()});$('slug').addEventListener('input',()=>$('slug').dataset.edited='1');['content','excerpt','image','imageAlt','category'].forEach(id=>$(id).addEventListener('input',preview));
 function data(status){return{title:$('title').value.trim(),slug:slugify($('slug').value||$('title').value),excerpt:$('excerpt').value.trim(),content:$('content').value,seoTitle:$('seoTitle').value.trim()||$('title').value.trim(),focusKeyword:$('keyword').value.trim(),metaDescription:$('meta').value.trim(),category:$('category').value.trim(),language:$('language').value,author:$('author').value.trim(),reviewer:$('reviewer').value.trim(),image:$('image').value.trim(),imageAlt:$('imageAlt').value.trim(),medicalReviewed:$('medical').checked,status,originalSlug:$('original-slug').value}}
-async function request(path,opts={}){if(!api())throw Error('Masukkan URL Worker API di Pengaturan.');const r=await fetch(api()+path,{...opts,headers:{'Content-Type':'application/json',...(opts.headers||{})}});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error(d.error||'Permintaan gagal ('+r.status+')');return d}
+async function request(path,opts={}){if(!api())throw Error('Masukkan URL Worker API di Pengaturan.');const r=await fetch(api()+path,{...opts,credentials:'include',headers:{'Content-Type':'application/json',...(opts.headers||{})}});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error(d.error||'Permintaan gagal ('+r.status+')');return d}
 async function save(status){const a=data(status);if(!a.title||!a.content||!a.slug)return note('Judul, URL slug, dan isi artikel wajib diisi.',true);if(status==='published'&&/bali belly|medical|treatment|symptom|medicine|medication|doctor|IV/i.test(a.title+' '+a.content)&&(!a.medicalReviewed||!a.reviewer))return note('Konten medis wajib memiliki nama reviewer dan persetujuan pemeriksaan sebelum diterbitkan.',true);try{await request('/api/articles/save',{method:'POST',body:JSON.stringify(a)});note(status==='published'?'Artikel diterbitkan. Tunggu deployment GitHub Pages selesai.':'Draft artikel berhasil disimpan.');await loadArticles()}catch(e){note(e.message,true)}}
 $('save-draft').onclick=()=>save('draft');$('publish').onclick=()=>save('published');
 async function loadArticles(){try{const d=await request('/api/articles');articles=d.articles||[];$('total').textContent=articles.length;$('published').textContent=articles.filter(a=>a.status==='published').length;$('drafts').textContent=articles.filter(a=>a.status==='draft').length;const html=articles.sort((a,b)=>(b.updatedAt||'').localeCompare(a.updatedAt||'')).map(a=>`<div class="rowitem"><div><b>${esc(a.title)}</b><small>${esc(a.slug)} · ${esc((a.status||'draft').toUpperCase())}</small></div><button class="secondary" data-edit="${esc(a.slug)}">Edit</button></div>`).join('')||'<p class="muted">Belum ada artikel.</p>';$('article-list').innerHTML=html;$('recent').innerHTML=html;document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>editArticle(b.dataset.edit))}catch(e){$('recent').textContent=e.message;$('article-list').textContent=e.message}}
@@ -44,4 +44,40 @@ $('save-homepage-images').onclick=async()=>{
 async function getSettings(){try{settings=(await request('/api/settings')).settings||{};const imgs=settings.homepageImages||{};['hero','essential','tablet','complete'].forEach(k=>{const v=imgs[k]||{};const url=document.querySelector(`[data-home-url="${k}"]`);const alt=document.querySelector(`[data-home-alt="${k}"]`);const prev=document.querySelector(`[data-home-preview="${k}"]`);if(url)url.value=v.url||'';if(alt)alt.value=v.alt||'';if(prev)prev.innerHTML=v.url?'<img src="'+esc(v.url)+'" alt="">':'Belum ada gambar'});const p=settings.promo||{};$('promo-enabled').checked=!!p.enabled;$('promo-name').value=p.name||'';$('promo-discount').value=p.discount||'';$('promo-code').value=p.code||'';$('promo-start').value=p.start||'';$('promo-end').value=p.end||'';$('promo-note').value=p.note||'';}catch(e){note('Pengaturan belum dapat dimuat: '+e.message,true)}}
 async function saveSettings(){try{await request('/api/settings/save',{method:'POST',body:JSON.stringify(settings)});note('Pengaturan berhasil disimpan ke GitHub.')}catch(e){note(e.message,true)}}
 $('save-promo').onclick=()=>{settings.promo={enabled:$('promo-enabled').checked,name:$('promo-name').value,discount:Number($('promo-discount').value||0),code:$('promo-code').value,start:$('promo-start').value,end:$('promo-end').value,note:$('promo-note').value};saveSettings()};
-$('api-url').value=localStorage.getItem(APIKEY)||'';if(api()){loadArticles();getSettings()}else{$('recent').textContent='Atur URL Worker API pada menu Pengaturan untuk menghubungkan dashboard.'}
+
+$('api-url').value=localStorage.getItem(APIKEY)||DEFAULT_API;
+async function showLogin(message=''){
+ document.body.classList.remove('admin-authenticated');
+ $('bbr-login').style.display='flex';
+ $('bbr-login-error').textContent=message;
+}
+async function enterAdmin(){
+ document.body.classList.add('admin-authenticated');
+ $('bbr-login').style.display='none';
+ await loadArticles();
+ await getSettings();
+}
+$('bbr-login-form').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const btn=$('bbr-login-submit');btn.disabled=true;btn.textContent='Memeriksa...';
+ $('bbr-login-error').textContent='';
+ try{
+  const r=await fetch(api()+'/api/auth/login',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:$('bbr-login-email').value,password:$('bbr-login-password').value})});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok)throw Error(d.error||'Login gagal.');
+  $('bbr-login-password').value='';
+  await enterAdmin();
+ }catch(err){$('bbr-login-error').textContent=err.message}
+ finally{btn.disabled=false;btn.textContent='Login ke Dashboard'}
+});
+$('logout-btn').onclick=async()=>{
+ try{await fetch(api()+'/api/auth/logout',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'}})}catch{}
+ await showLogin('Anda sudah keluar dari dashboard.');
+};
+(async()=>{
+ try{
+  const r=await fetch(api()+'/api/auth/session',{credentials:'include',cache:'no-store'});
+  if(r.ok)await enterAdmin();else await showLogin();
+ }catch(e){await showLogin('API belum dapat dihubungi. Pastikan subdomain API sudah aktif.')}
+})();
+
