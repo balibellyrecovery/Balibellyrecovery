@@ -7,6 +7,7 @@ Paket ini mempertahankan website sumber `bali-belly-recovery-github.zip` (31 fil
 - Dashboard ringkasan artikel.
 - Blog: tambah artikel, edit artikel, simpan Draft, terbitkan, preview, SEO title, meta description, slug, keyword, kategori, bahasa, excerpt, author, reviewer, featured image dan ALT text.
 - Media Library: upload JPG, PNG, WebP, GIF maksimum 4 MB ke `assets/uploads/`.
+- Homepage Image Manager: unggah dan atur foto Hero, Essential Package, Tablet Medication Package, dan Complete Package langsung dari Admin. ALT text dapat diatur untuk setiap gambar. Saat disimpan, Worker memperbarui `index.html` dan `content/site-settings.json` di GitHub.
 - Promo Manager: simpan status, nama promo, diskon, kode, tanggal mulai/akhir dan catatan ke `content/site-settings.json`.
 - Package Manager: simpan nama paket, harga dan deskripsi ke file pengaturan.
 - Cloudflare Worker API + GitHub App untuk menyimpan konten ke repository.
@@ -16,7 +17,7 @@ Paket ini mempertahankan website sumber `bali-belly-recovery-github.zip` (31 fil
 
 ZIP berisi kode dashboard dan backend, tetapi CMS **belum dapat login atau menulis ke GitHub sampai akun GitHub dan Cloudflare Anda dikonfigurasi**. Saya tidak memiliki akses ke akun tersebut, jadi belum dapat membuat GitHub App, mengisi secret, atau menguji deployment langsung.
 
-Promo dan paket disimpan ke `content/site-settings.json`, tetapi homepage dan halaman paket publik **belum terhubung untuk membaca pengaturan itu secara otomatis**. Jadi perubahan melalui Promo/Paket Manager belum otomatis mengubah tampilan website. Integrasi tampilan publik perlu tahap lanjutan. Penjadwalan artikel dan tombol hapus belum tersedia.
+Pengaturan gambar homepage terhubung melalui endpoint `/api/homepage/images/save`. Setelah upload gambar di tab Media / Gambar, klik **Simpan Gambar Homepage**. Worker akan memperbarui homepage di GitHub; tampilan publik berubah setelah GitHub Pages selesai deploy. Pengaturan promo masih disimpan di `content/site-settings.json` dan belum otomatis mengubah seluruh banner/harga publik. Penjadwalan artikel dan tombol hapus belum tersedia.
 
 Artikel yang diterbitkan menghasilkan `blog/<slug>.html`, memperbarui `blog/index.html`, `content/blog/index.json`, dan menambahkan URL ke `sitemap.xml`. Tambahkan tautan Blog ke navigasi publik bila diperlukan.
 

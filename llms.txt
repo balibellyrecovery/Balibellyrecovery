@@ -1,21 +1,22 @@
 # Bali Belly Recovery
 
-> Bali Belly treatment at your villa or hotel in Bali. A doctor and nurse come to you, 24/7. Specialist service of Dripwell Bali (https://www.dripwellbali.com/).
+> Specialist Bali Belly medical service by DripWell Bali. Doctor and nurse home-visit requests are accepted 24/7; each visit is subject to address confirmation, clinical assessment and team availability.
 
 ## Facts
 - Searching for Bali Belly near me: send a WhatsApp location pin; a doctor and nurse come to your villa or hotel.
 - Service: Bali Belly doctor and nurse home visit, IV therapy and medication, medical report for travel insurance
-- Hours: 24/7
+- Appointment requests: accepted 24/7; visit availability and estimated arrival time are confirmed for the exact address.
 - Contact: WhatsApp +62 822 2161 4966, dripwellbali@gmail.com
-- Bali Belly Package: Rp 2.025.000, Rp 1.721.250 with code SAVE15 (promo may change)
+- Packages (normal prices): Essential Rp 2.025.000; Bali Belly + Tablet Medication Rp 2.275.000; Complete Rp 2.525.000.
+- Active offer: 15% off the three packages with code SAVE15. Promo prices: Rp 1.721.250; Rp 1.933.750; Rp 2.146.250 respectively. Confirm the current offer when booking.
 - Covered areas (15): Canggu, Kerobokan & Umalas, Dalung, Seminyak, Legian, Kuta, Munggu & Cemagi, Kedungu & Tanah Lot, Tabanan, Uluwatu & Pecatu, Jimbaran, Nusa Dua & Benoa, Sanur, Denpasar, Ubud. Send a WhatsApp location pin to confirm arrival time.
 - Go to the nearest emergency room for fainting, blood in stool or vomit, severe abdominal pain, very high fever, or inability to keep fluids down.
 
 ## Pages
+- [Blog](https://balibellyrecovery.com/blog/)
 - [index.html](https://balibellyrecovery.com/)
 - [treatment.html](https://balibellyrecovery.com/treatment.html)
 - [doctor-home-visit.html](https://balibellyrecovery.com/doctor-home-visit.html)
-- [packages.html](https://balibellyrecovery.com/packages.html)
 - [symptoms.html](https://balibellyrecovery.com/symptoms.html)
 - [about.html](https://balibellyrecovery.com/about.html)
 - [covered-areas.html](https://balibellyrecovery.com/covered-areas.html)
