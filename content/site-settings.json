@@ -1,4 +1,34 @@
 {
-  "promo": {"enabled": false, "name": "", "discount": 0, "code": "", "start": "", "end": "", "note": ""},
-  "package": {"name": "Bali Belly Medical Package", "price": 2025000, "description": ""}
+  "promo": {
+    "enabled": true,
+    "name": "Vacation Saver Promo",
+    "discount": 15,
+    "code": "SAVE15",
+    "start": "",
+    "end": "",
+    "note": "15% off the three Bali Belly Recovery packages. Confirm eligibility and current offer with the team when booking."
+  },
+  "package": {
+    "name": "Bali Belly Recovery Packages",
+    "price": 2025000,
+    "description": "Three packages: Essential, Bali Belly + Tablet Medication, and Complete. Prices shown on the website include the active 15% SAVE15 promotion."
+  },
+  "homepageImages": {
+    "hero": {
+      "url": "",
+      "alt": ""
+    },
+    "essential": {
+      "url": "",
+      "alt": ""
+    },
+    "tablet": {
+      "url": "",
+      "alt": ""
+    },
+    "complete": {
+      "url": "",
+      "alt": ""
+    }
+  }
 }

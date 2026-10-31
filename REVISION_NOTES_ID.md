@@ -27,3 +27,14 @@ Revisi ini hanya mengubah website Bali Belly Recovery. File DripWell Bali tidak 
 - Kode tidak dapat memverifikasi ketersediaan dokter, harga tambahan, atau cakupan aktual; semua informasi operasional harus dikonfirmasi oleh tim.
 - Artikel blog belum dibuat/dipublikasikan karena konten medis perlu ditinjau dokter terlebih dahulu.
 - Revisi ini belum membuktikan indexing, ranking, Core Web Vitals, atau performa Google Search Console. Pemeriksaan tersebut dilakukan setelah deployment.
+
+
+## Penyesuaian SEO halaman area (31 Oktober 2026)
+- SEO title seluruh 15 halaman area disederhanakan menjadi format "Bali Belly Doctor in [Area], Bali | Home Doctor Visit".
+- Kata "Bali Belly Recovery" dihilangkan dari SEO title halaman area agar fokus pada frasa layanan + lokasi. Nama merek utama "Bali Belly Recovery" tetap dipertahankan pada identitas bisnis/schema dan elemen branding situs.
+- Struktur ZIP mengikuti root repository: file halaman utama berada di root; folder `admin/`, `assets/uploads/`, `blog/`, `content/`, dan `workers/` berada pada lokasi masing-masing.
+
+
+## Revisi SEO title halaman area — 31 Oktober 2026
+
+Seluruh 15 halaman area menggunakan pola title yang konsisten: `Bali Belly Treatment in [Area] | Doctor Home Visit` atau `Bali Belly Treatment in [Area] | Doctor Visit` untuk wilayah gabungan. Kata `Recovery` tidak digunakan dalam SEO title halaman area. URL halaman tidak diubah. Open Graph title dan Twitter title diselaraskan jika tersedia.
