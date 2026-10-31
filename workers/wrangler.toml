@@ -1,0 +1,14 @@
+name = "bali-belly-recovery-cms"
+main = "cms-worker.js"
+compatibility_date = "2026-10-31"
+
+[vars]
+# Ganti semua nilai contoh berikut sebelum deploy.
+GH_OWNER = "YOUR_GITHUB_USERNAME_OR_ORG"
+GH_REPO = "YOUR_REPOSITORY_NAME"
+GH_BRANCH = "cms-staging"
+GH_APP_ID = "YOUR_GITHUB_APP_ID"
+GH_INSTALLATION_ID = "YOUR_GITHUB_APP_INSTALLATION_ID"
+CF_ACCESS_TEAM_DOMAIN = "YOUR_TEAM.cloudflareaccess.com"
+# Rahasia yang wajib dibuat dengan `npx wrangler secret put`:
+# GH_APP_PRIVATE_KEY dan CF_ACCESS_AUD
