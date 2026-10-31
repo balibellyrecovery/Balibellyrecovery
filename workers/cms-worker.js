@@ -1,10 +1,28 @@
 /* Bali Belly Recovery CMS API. No OpenAI integration or AI API key is used. */
 const ORIGIN='https://balibellyrecovery.com';
-const cors={'Access-Control-Allow-Origin':ORIGIN,'Access-Control-Allow-Methods':'GET,POST,OPTIONS','Access-Control-Allow-Headers':'Content-Type,Cf-Access-Jwt-Assertion','Vary':'Origin'};
+const cors={'Access-Control-Allow-Origin':ORIGIN,'Access-Control-Allow-Methods':'GET,POST,OPTIONS','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Credentials':'true','Vary':'Origin'};
 const enc=new TextEncoder();
 function json(data,status=200){return new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json; charset=utf-8',...cors,'Cache-Control':'no-store'}})}
+
 function b64u(s){return s.replace(/-/g,'+').replace(/_/g,'/').padEnd(Math.ceil(s.length/4)*4,'=')}
-async function verifyAccess(req,env){const token=req.headers.get('Cf-Access-Jwt-Assertion');if(!token)throw new Error('Cloudflare Access belum terdeteksi. Pastikan Worker hostname dilindungi Access.');const [h,p,s]=token.split('.');if(!h||!p||!s)throw new Error('Token Cloudflare Access tidak valid.');const header=JSON.parse(atob(b64u(h))),payload=JSON.parse(atob(b64u(p)));const aud=payload.aud;if(!(aud===env.CF_ACCESS_AUD||(Array.isArray(aud)&&aud.includes(env.CF_ACCESS_AUD))))throw new Error('Audience Cloudflare Access tidak cocok.');if(payload.exp*1000<Date.now())throw new Error('Sesi Cloudflare Access kedaluwarsa.');const domain=env.CF_ACCESS_TEAM_DOMAIN;if(!domain)throw new Error('CF_ACCESS_TEAM_DOMAIN belum dikonfigurasi.');const jwks=await fetch(`https://${domain}/cdn-cgi/access/certs`).then(r=>r.json());const jwk=jwks.keys.find(k=>k.kid===header.kid);if(!jwk)throw new Error('Kunci verifikasi Cloudflare tidak ditemukan.');const key=await crypto.subtle.importKey('jwk',jwk,{name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'},false,['verify']);const sig=Uint8Array.from(atob(b64u(s)),c=>c.charCodeAt(0));if(!await crypto.subtle.verify('RSASSA-PKCS1-v1_5',key,sig,enc.encode(h+'.'+p)))throw new Error('Tanda tangan Cloudflare Access tidak valid.');}
+function toB64Url(bytes){let s='';for(const b of bytes)s+=String.fromCharCode(b);return btoa(s).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_')}
+function fromB64Url(s){return Uint8Array.from(atob(b64u(s)),c=>c.charCodeAt(0))}
+function cookieValue(req,name){const raw=req.headers.get('Cookie')||'';for(const part of raw.split(';')){const i=part.indexOf('=');if(i>0&&part.slice(0,i).trim()===name)return part.slice(i+1).trim()}return ''}
+function cookieHeader(value,maxAge){return `bbr_admin_session=${value}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAge}`}
+function safeEqual(a,b){a=String(a||'');b=String(b||'');let diff=a.length^b.length;const n=Math.max(a.length,b.length);for(let i=0;i<n;i++)diff|=(a.charCodeAt(i)||0)^(b.charCodeAt(i)||0);return diff===0}
+async function hmacKey(env){if(!env.SESSION_SECRET||env.SESSION_SECRET.length<32)throw new Error('SESSION_SECRET belum dikonfigurasi dengan minimal 32 karakter.');return crypto.subtle.importKey('raw',enc.encode(env.SESSION_SECRET),{name:'HMAC',hash:'SHA-256'},false,['sign','verify'])}
+async function makeSession(env){const payload={sub:'admin',exp:Math.floor(Date.now()/1000)+86400,nonce:toB64Url(crypto.getRandomValues(new Uint8Array(16)))};const data=toB64Url(enc.encode(JSON.stringify(payload)));const key=await hmacKey(env);const sig=await crypto.subtle.sign('HMAC',key,enc.encode(data));return data+'.'+toB64Url(new Uint8Array(sig))}
+async function verifySession(req,env){const token=cookieValue(req,'bbr_admin_session');if(!token)throw new Error('Sesi admin tidak ditemukan. Silakan login kembali.');const parts=token.split('.');if(parts.length!==2)throw new Error('Sesi admin tidak valid.');const key=await hmacKey(env);const valid=await crypto.subtle.verify('HMAC',key,fromB64Url(parts[1]),enc.encode(parts[0]));if(!valid)throw new Error('Sesi admin tidak valid.');let p;try{p=JSON.parse(new TextDecoder().decode(fromB64Url(parts[0])))}catch{throw new Error('Sesi admin tidak valid.')}if(p.sub!=='admin'||!p.exp||p.exp*1000<Date.now())throw new Error('Sesi admin sudah kedaluwarsa.');}
+function requireSameOrigin(req){const origin=req.headers.get('Origin');if(origin!==ORIGIN)throw new Error('Permintaan ditolak: origin tidak diizinkan.');}
+async function login(req,env){
+ requireSameOrigin(req);
+ if(env.LOGIN_LIMITER){const ip=req.headers.get('CF-Connecting-IP')||'unknown';const result=await env.LOGIN_LIMITER.limit({key:ip});if(!result.success)return json({error:'Terlalu banyak percobaan login. Coba lagi dalam satu menit.'},429);}
+ if(!env.ADMIN_EMAIL||!env.ADMIN_PASSWORD)throw new Error('ADMIN_EMAIL dan ADMIN_PASSWORD belum dikonfigurasi sebagai Secret.');
+ const body=await req.json();const email=String(body.email||'').trim().toLowerCase();const password=String(body.password||'');
+ if(!safeEqual(email,env.ADMIN_EMAIL.trim().toLowerCase())||!safeEqual(password,env.ADMIN_PASSWORD))return json({error:'Email atau password tidak sesuai.'},401);
+ const token=await makeSession(env);
+ return new Response(JSON.stringify({ok:true}),{status:200,headers:{'Content-Type':'application/json; charset=utf-8',...cors,'Cache-Control':'no-store','Set-Cookie':cookieHeader(token,86400)}});
+}
 function b64urlBytes(bytes){let s='';for(const b of bytes)s+=String.fromCharCode(b);return btoa(s).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_')}
 function pemBytes(pem){return Uint8Array.from(atob(pem.replace(/-----BEGIN PRIVATE KEY-----|-----END PRIVATE KEY-----|\s/g,'')),c=>c.charCodeAt(0))}
 async function githubToken(env){const now=Math.floor(Date.now()/1000),head=b64urlBytes(enc.encode(JSON.stringify({alg:'RS256',typ:'JWT'}))),body=b64urlBytes(enc.encode(JSON.stringify({iat:now-30,exp:now+540,iss:env.GH_APP_ID}))),unsigned=head+'.'+body;const key=await crypto.subtle.importKey('pkcs8',pemBytes(env.GH_APP_PRIVATE_KEY),{name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'},false,['sign']);const sig=await crypto.subtle.sign('RSASSA-PKCS1-v1_5',key,enc.encode(unsigned));const jwt=unsigned+'.'+b64urlBytes(new Uint8Array(sig));const r=await fetch(`https://api.github.com/app/installations/${env.GH_INSTALLATION_ID}/access_tokens`,{method:'POST',headers:{Authorization:`Bearer ${jwt}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'BaliBellyRecovery-CMS'},body:'{}'});if(!r.ok)throw new Error('GitHub App token gagal dibuat: '+await r.text());return(await r.json()).token}
@@ -47,5 +65,31 @@ async function saveHomepageImages(env,payload){
  await putText(env,'content/site-settings.json',JSON.stringify({...settings,homepageImages:saved},null,2),'Save homepage image settings');
  return{ok:true,homepageImages:saved,note:'Homepage images saved. Wait for GitHub Pages deployment.'};
 }
-async function handler(req,env){if(req.method==='OPTIONS')return new Response(null,{headers:cors});const u=new URL(req.url);if(req.method==='GET'&&u.pathname==='/api/health')return json({ok:true,service:'Bali Belly Recovery CMS'});await verifyAccess(req,env);if(req.method==='GET'&&u.pathname==='/api/articles')return json({articles:await listArticles(env)});if(req.method==='GET'&&u.pathname==='/api/settings')return json({settings:await readSettings(env)});if(req.method==='POST'&&u.pathname==='/api/settings/save'){const s=await req.json();await putText(env,'content/site-settings.json',JSON.stringify(s,null,2),'Update CMS-managed site settings');return json({ok:true,settings:s,note:'Settings saved to repository. Public page components must read this JSON to reflect changes.'})}if(req.method==='POST'&&u.pathname==='/api/homepage/images/save'){const payload=await req.json();return json(await saveHomepageImages(env,payload))}if(req.method==='POST'&&u.pathname==='/api/articles/save'){const a=await req.json();return json(await saveArticle(env,a))}if(req.method==='POST'&&u.pathname==='/api/media/upload'){const b=await req.json();if(!b.name||!b.data||!/^image\/(jpeg|png|webp|gif)$/.test(b.mime||''))return json({error:'Data gambar atau tipe file tidak valid.'},400);if(b.data.length>5_600_000)return json({error:'File terlalu besar. Maksimum sekitar 4 MB.'},413);if(!/^[a-z0-9][a-z0-9-]*\.(jpg|jpeg|png|webp|gif)$/.test(b.name))return json({error:'Nama file tidak valid.'},400);const path='assets/uploads/'+b.name;await putBase64(env,path,b.data,'Upload CMS image '+b.name);return json({ok:true,path,url:`${ORIGIN}/${path}`})}return json({error:'Endpoint tidak ditemukan.'},404)}
-export default{async fetch(req,env){try{return await handler(req,env)}catch(e){const msg=e?.message||'Internal server error';return json({error:msg},/Access|Token|Audience|Sesi|Tanda tangan|Cloudflare/i.test(msg)?401:500)}}};
+
+async function handler(req,env){
+ const u=new URL(req.url);
+ if(req.method==='OPTIONS'){
+  const origin=req.headers.get('Origin');
+  if(origin!==ORIGIN)return new Response(null,{status:403});
+  return new Response(null,{headers:cors});
+ }
+ if(req.method==='GET'&&u.pathname==='/api/health')return json({ok:true,service:'Bali Belly Recovery CMS'});
+ if(req.method==='POST'&&u.pathname==='/api/auth/login')return login(req,env);
+ if(req.method==='POST'&&u.pathname==='/api/auth/logout'){
+  requireSameOrigin(req);
+  return new Response(JSON.stringify({ok:true}),{status:200,headers:{'Content-Type':'application/json; charset=utf-8',...cors,'Cache-Control':'no-store','Set-Cookie':cookieHeader('',0)}});
+ }
+ if(req.method==='GET'&&u.pathname==='/api/auth/session'){
+  try{await verifySession(req,env);return json({ok:true})}catch(e){return json({ok:false,error:e.message},401)}
+ }
+ requireSameOrigin(req);
+ await verifySession(req,env);
+ if(req.method==='GET'&&u.pathname==='/api/articles')return json({articles:await listArticles(env)});
+ if(req.method==='GET'&&u.pathname==='/api/settings')return json({settings:await readSettings(env)});
+ if(req.method==='POST'&&u.pathname==='/api/settings/save'){const s=await req.json();await putText(env,'content/site-settings.json',JSON.stringify(s,null,2),'Update CMS-managed site settings');return json({ok:true,settings:s,note:'Settings saved to repository. Public page components must read this JSON to reflect changes.'})}
+ if(req.method==='POST'&&u.pathname==='/api/homepage/images/save'){const payload=await req.json();return json(await saveHomepageImages(env,payload))}
+ if(req.method==='POST'&&u.pathname==='/api/articles/save'){const a=await req.json();return json(await saveArticle(env,a))}
+ if(req.method==='POST'&&u.pathname==='/api/media/upload'){const b=await req.json();if(!b.name||!b.data||!/^image\/(jpeg|png|webp|gif)$/.test(b.mime||''))return json({error:'Data gambar atau tipe file tidak valid.'},400);if(b.data.length>5_600_000)return json({error:'File terlalu besar. Maksimum sekitar 4 MB.'},413);if(!/^[a-z0-9][a-z0-9-]*\.(jpg|jpeg|png|webp|gif)$/.test(b.name))return json({error:'Nama file tidak valid.'},400);const path='assets/uploads/'+b.name;await putBase64(env,path,b.data,'Upload CMS image '+b.name);return json({ok:true,path,url:`${ORIGIN}/${path}`})}
+ return json({error:'Endpoint tidak ditemukan.'},404);
+}
+export default{async fetch(req,env){try{return await handler(req,env)}catch(e){const msg=e?.message||'Internal server error';return json({error:msg},/Sesi admin|origin tidak diizinkan/i.test(msg)?401:500)}}};
