@@ -2,7 +2,7 @@
   "promo": {
     "enabled": true,
     "name": "Vacation Saver Promo",
-    "discount": 20,
+    "discount": 15,
     "code": "SAVE15",
     "start": "2016-11-01",
     "end": "2028-11-11",
