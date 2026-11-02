@@ -158,7 +158,7 @@ async function saveHomepageImages(env,payload){
  return{ok:true,homepageImages:saved,note:'Homepage images saved. Wait for GitHub Pages deployment.'};
 }
 
-async function publicHomepageData(env){const settings=await readSettings(env);const all=await listArticles(env);return{promo:settings.promo||{},gallery:settings.gallery||[],articles:all.filter(a=>a.status==='published').sort((a,b)=>(b.publishedAt||'').localeCompare(a.publishedAt||'')).slice(0,12)};}
+async function publicHomepageData(env){const settings=await readSettings(env);const all=await listArticles(env);return{promo:settings.promo||{},homepageImages:settings.homepageImages||{},gallery:settings.gallery||[],articles:all.filter(a=>a.status==='published').sort((a,b)=>(b.publishedAt||'').localeCompare(a.publishedAt||'')).slice(0,12)};}
 async function saveHomepageGallery(env,payload){
  const gallery=Array.isArray(payload.gallery)?payload.gallery.slice(0,8):[];
  const clean=gallery.map(x=>{const url=String(x.url||'').trim(),caption=String(x.caption||'').trim().slice(0,180),alt=String(x.alt||'').trim().slice(0,180);if(!url.startsWith(ORIGIN+'/assets/uploads/'))throw new Error('URL foto galeri tidak valid. Unggah melalui Media Library.');return{url,caption,alt};});

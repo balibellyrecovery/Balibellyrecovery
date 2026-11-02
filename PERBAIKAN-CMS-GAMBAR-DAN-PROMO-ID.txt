@@ -1,0 +1,43 @@
+BALI BELLY RECOVERY — PAKET PERBAIKAN CMS GAMBAR + PROMO OTOMATIS
+
+Isi paket
+- Homepage: slot Hero, Essential, Tablet Medication, Complete dan Treatment Gallery sudah memiliki penanda CMS yang benar.
+- Worker: menyimpan gambar yang dipilih dari Admin ke homepage, memperbarui gambar lama (tidak menumpuk duplikat), dan mengembalikan homepageImages pada endpoint publik.
+- Admin: fitur upload Media Library, upload gambar homepage dan Treatment Gallery tetap disertakan.
+- Sistem harga/promo otomatis dari paket sebelumnya tetap dipertahankan.
+- Folder assets/uploads dan seluruh halaman website tetap disertakan.
+
+CARA MEMASANG
+1. Ekstrak ZIP ini di komputer.
+2. Buka folder Balibellyrecovery-main.
+3. Upload/replace isi folder tersebut ke repository GitHub:
+   https://github.com/balibellyrecovery/BaliBellyRecovery
+   Pertahankan struktur folder. Jangan mengunggah folder pembungkus ZIP sebagai satu folder tambahan.
+4. Pastikan file berikut berada pada lokasi yang sama di repository:
+   - index.html
+   - admin/index.html
+   - admin/admin.js
+   - content/site-settings.json
+   - workers/cms-worker.js
+   - assets/uploads/ (folder gambar)
+5. Setelah GitHub menerima perubahan, buka Cloudflare Dashboard > Workers & Pages > bali-belly-recovery-cms.
+6. Buka Edit code, ganti seluruh isi Worker dengan file workers/cms-worker.js dari ZIP ini, lalu Deploy.
+7. JANGAN mengubah atau menghapus Secrets/Variables Worker. Khususnya ADMIN_EMAIL, ADMIN_PASSWORD, SESSION_SECRET, GH_APP_ID, GH_APP_PRIVATE_KEY, GH_INSTALLATION_ID, GH_REPO_OWNER, GH_REPO_NAME dan GH_BRANCH harus tetap seperti konfigurasi yang sudah berjalan.
+8. Tunggu GitHub Pages selesai menerbitkan perubahan.
+
+CARA MENGGUNAKAN ADMIN
+1. Buka https://balibellyrecovery.com/admin/
+2. Login seperti biasa.
+3. Buka bagian Homepage Images / Media.
+4. Pilih file gambar. Sistem akan mengunggah gambar ke assets/uploads secara otomatis dan menampilkan preview.
+5. Isi ALT Text, lalu klik Save Homepage Images.
+6. Untuk Treatment Gallery, unggah foto, isi caption dan ALT Text, lalu klik Save Gallery.
+7. Tunggu deployment GitHub Pages, kemudian refresh homepage.
+
+CATATAN
+- Format gambar: JPG/JPEG, PNG, WEBP atau GIF.
+- Maksimum ukuran file: 4 MB per gambar.
+- URL gambar yang dipilih harus berasal dari Media Library website ini.
+- Mengosongkan pilihan gambar lalu menyimpan akan menghapus gambar CMS dari slot homepage.
+- Upload gambar baru dan menyimpan slot homepage adalah dua langkah: setelah upload, tetap klik Save Homepage Images.
+- File Worker harus di-deploy ke Cloudflare selain di-commit ke GitHub. Mengunggah Worker ke GitHub saja tidak memperbarui Worker yang sedang berjalan.
