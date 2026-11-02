@@ -27,7 +27,35 @@ function b64urlBytes(bytes){let s='';for(const b of bytes)s+=String.fromCharCode
 function pemBytes(pem){return Uint8Array.from(atob(pem.replace(/-----BEGIN PRIVATE KEY-----|-----END PRIVATE KEY-----|\s/g,'')),c=>c.charCodeAt(0))}
 async function githubToken(env){const now=Math.floor(Date.now()/1000),head=b64urlBytes(enc.encode(JSON.stringify({alg:'RS256',typ:'JWT'}))),body=b64urlBytes(enc.encode(JSON.stringify({iat:now-30,exp:now+540,iss:env.GH_APP_ID}))),unsigned=head+'.'+body;const key=await crypto.subtle.importKey('pkcs8',pemBytes(env.GH_APP_PRIVATE_KEY),{name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'},false,['sign']);const sig=await crypto.subtle.sign('RSASSA-PKCS1-v1_5',key,enc.encode(unsigned));const jwt=unsigned+'.'+b64urlBytes(new Uint8Array(sig));const r=await fetch(`https://api.github.com/app/installations/${env.GH_INSTALLATION_ID}/access_tokens`,{method:'POST',headers:{Authorization:`Bearer ${jwt}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'BaliBellyRecovery-CMS'},body:'{}'});if(!r.ok)throw new Error('GitHub App token gagal dibuat: '+await r.text());return(await r.json()).token}
 async function gh(env,path,method='GET',body){const token=await githubToken(env);const r=await fetch(`https://api.github.com/repos/${env.GH_OWNER}/${env.GH_REPO}/contents/${path}`,{method,headers:{Authorization:`Bearer ${token}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'BaliBellyRecovery-CMS','Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});if(!r.ok)throw new Error(`GitHub API ${r.status}: ${await r.text()}`);return r.status===204?null:r.json()}
-async function readText(env,path){const f=await gh(env,path);return decodeURIComponent(escape(atob(f.content.replace(/\n/g,''))))}
+async function readText(env, path) {
+  const f = await gh(env, path);
+
+  if (!f || typeof f.content !== 'string') {
+    throw new Error(`Konten GitHub tidak tersedia untuk file: ${path}`);
+  }
+
+  if (f.encoding !== 'base64') {
+    throw new Error(`Encoding GitHub tidak sesuai untuk file: ${path}. Encoding: ${f.encoding}`);
+  }
+
+  const base64 = f.content.replace(/\s/g, '');
+
+  if (!base64 || base64.length % 4 === 1) {
+    throw new Error(`Data Base64 tidak valid pada file: ${path}`);
+  }
+
+  let binary;
+
+  try {
+    binary = atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, '='));
+  } catch (error) {
+    throw new Error(`Gagal membaca Base64 dari GitHub: ${path}`);
+  }
+
+  const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+
+  return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+}
 async function putText(env,path,content,message){let sha;try{sha=(await gh(env,path)).sha}catch(e){if(!String(e).includes('404'))throw e}const encoded=btoa(unescape(encodeURIComponent(content)));return gh(env,path,'PUT',{message,content:encoded,branch:env.GH_BRANCH||'main',...(sha?{sha}:{})})}
 async function putBase64(env,path,content,message){let sha;try{sha=(await gh(env,path)).sha}catch(e){if(!String(e).includes('404'))throw e}return gh(env,path,'PUT',{message,content,branch:env.GH_BRANCH||'main',...(sha?{sha}:{})})}
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
