@@ -66,6 +66,17 @@ async function saveHomepageImages(env,payload){
  return{ok:true,homepageImages:saved,note:'Homepage images saved. Wait for GitHub Pages deployment.'};
 }
 
+
+async function publicHomepageData(env){const settings=await readSettings(env);const all=await listArticles(env);return{promo:settings.promo||{},gallery:settings.gallery||[],articles:all.filter(a=>a.status==='published').sort((a,b)=>(b.publishedAt||'').localeCompare(a.publishedAt||'')).slice(0,12)};}
+async function saveHomepageGallery(env,payload){
+ const gallery=Array.isArray(payload.gallery)?payload.gallery.slice(0,8):[];
+ const clean=gallery.map(x=>{const url=String(x.url||'').trim(),caption=String(x.caption||'').trim().slice(0,180),alt=String(x.alt||'').trim().slice(0,180);if(!url.startsWith(ORIGIN+'/assets/uploads/'))throw new Error('URL foto galeri tidak valid. Unggah melalui Media Library.');return{url,caption,alt};});
+ let html=await readText(env,'index.html');const start='<!-- BBR_TREATMENT_GALLERY_START -->',end='<!-- BBR_TREATMENT_GALLERY_END -->';const i=html.indexOf(start),j=html.indexOf(end,i+start.length);if(i<0||j<0)throw new Error('Penanda galeri tidak ditemukan di homepage.');
+ const cards=clean.map(x=>`<figure class="bbr-treatment-gallery-item"><img src="${esc(x.url)}" alt="${esc(x.alt||x.caption||'Bali Belly Recovery care in Bali')}" loading="lazy"><figcaption>${esc(x.caption)}</figcaption></figure>`).join('');
+ const empty=clean.length?'':'<!-- BBR_TREATMENT_GALLERY_EMPTY -->';html=html.slice(0,i+start.length)+'\n  '+empty+cards+'\n  '+html.slice(j);
+ await putText(env,'index.html',html,'Update homepage treatment gallery from CMS');const settings=await readSettings(env);await putText(env,'content/site-settings.json',JSON.stringify({...settings,gallery:clean},null,2),'Save homepage treatment gallery');return{ok:true,count:clean.length,note:'Gallery saved. Wait for GitHub Pages deployment.'};
+}
+
 async function handler(req,env){
  const u=new URL(req.url);
  if(req.method==='OPTIONS'){
@@ -74,6 +85,7 @@ async function handler(req,env){
   return new Response(null,{headers:cors});
  }
  if(req.method==='GET'&&u.pathname==='/api/health')return json({ok:true,service:'Bali Belly Recovery CMS'});
+ if(req.method==='GET'&&u.pathname==='/api/public/homepage')return json(await publicHomepageData(env));
  if(req.method==='POST'&&u.pathname==='/api/auth/login')return login(req,env);
  if(req.method==='POST'&&u.pathname==='/api/auth/logout'){
   requireSameOrigin(req);
@@ -88,6 +100,7 @@ async function handler(req,env){
  if(req.method==='GET'&&u.pathname==='/api/settings')return json({settings:await readSettings(env)});
  if(req.method==='POST'&&u.pathname==='/api/settings/save'){const s=await req.json();await putText(env,'content/site-settings.json',JSON.stringify(s,null,2),'Update CMS-managed site settings');return json({ok:true,settings:s,note:'Settings saved to repository. Public page components must read this JSON to reflect changes.'})}
  if(req.method==='POST'&&u.pathname==='/api/homepage/images/save'){const payload=await req.json();return json(await saveHomepageImages(env,payload))}
+ if(req.method==='POST'&&u.pathname==='/api/homepage/gallery/save'){const payload=await req.json();return json(await saveHomepageGallery(env,payload))}
  if(req.method==='POST'&&u.pathname==='/api/articles/save'){const a=await req.json();return json(await saveArticle(env,a))}
  if(req.method==='POST'&&u.pathname==='/api/media/upload'){const b=await req.json();if(!b.name||!b.data||!/^image\/(jpeg|png|webp|gif)$/.test(b.mime||''))return json({error:'Data gambar atau tipe file tidak valid.'},400);if(b.data.length>5_600_000)return json({error:'File terlalu besar. Maksimum sekitar 4 MB.'},413);if(!/^[a-z0-9][a-z0-9-]*\.(jpg|jpeg|png|webp|gif)$/.test(b.name))return json({error:'Nama file tidak valid.'},400);const path='assets/uploads/'+b.name;await putBase64(env,path,b.data,'Upload CMS image '+b.name);return json({ok:true,path,url:`${ORIGIN}/${path}`})}
  return json({error:'Endpoint tidak ditemukan.'},404);
