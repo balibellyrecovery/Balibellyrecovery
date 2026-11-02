@@ -2,7 +2,7 @@
   "promo": {
     "enabled": true,
     "name": "Vacation Saver Promo",
-    "discount": 15,
+    "discount": 10,
     "code": "BALIBELLY",
     "start": "2026-11-01",
     "end": "2026-11-11",
