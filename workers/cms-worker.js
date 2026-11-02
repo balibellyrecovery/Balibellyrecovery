@@ -29,27 +29,85 @@ function pemBytes(pem) {
     .replace(/\\n/g, '\n')
     .replace(/\r/g, '');
 
-  const base64 = normalized
-    .replace(/-----BEGIN PRIVATE KEY-----/g, '')
-    .replace(/-----END PRIVATE KEY-----/g, '')
-    .replace(/\s/g, '');
+  const match = normalized.match(
+    /-----BEGIN RSA PRIVATE KEY-----([\s\S]*?)-----END RSA PRIVATE KEY-----/
+  );
 
-  if (!base64 || base64.length % 4 === 1) {
-    throw new Error('Format GH_APP_PRIVATE_KEY tidak valid. Periksa format PEM.');
+  if (!match) {
+    throw new Error(
+      'GH_APP_PRIVATE_KEY harus menggunakan format RSA PRIVATE KEY.'
+    );
   }
 
-  let binary;
+  const base64 = match[1].replace(/\s/g, '');
+
+  if (!base64 || !/^[A-Za-z0-9+/]+={0,2}$/.test(base64)) {
+    throw new Error('Isi GH_APP_PRIVATE_KEY bukan Base64 yang valid.');
+  }
+
+  let pkcs1;
 
   try {
-    binary = atob(
-      base64.padEnd(Math.ceil(base64.length / 4) * 4, '=')
-    );
+    const binary = atob(base64);
+    pkcs1 = Uint8Array.from(binary, c => c.charCodeAt(0));
   } catch {
-    throw new Error('GH_APP_PRIVATE_KEY gagal dibaca. Periksa format PEM.');
+    throw new Error('Base64 GH_APP_PRIVATE_KEY tidak dapat dibaca.');
   }
 
-  return Uint8Array.from(binary, c => c.charCodeAt(0));
+  function derLength(length) {
+    if (length < 128) return [length];
+
+    const bytes = [];
+    while (length > 0) {
+      bytes.unshift(length & 255);
+      length >>>= 8;
+    }
+
+    return [0x80 | bytes.length, ...bytes];
+  }
+
+  function concat(parts) {
+    const length = parts.reduce((n, p) => n + p.length, 0);
+    const result = new Uint8Array(length);
+    let offset = 0;
+
+    for (const part of parts) {
+      result.set(part, offset);
+      offset += part.length;
+    }
+
+    return result;
+  }
+
+  // PKCS#8 AlgorithmIdentifier for RSA
+  const algorithm = new Uint8Array([
+    0x30, 0x0d,
+    0x06, 0x09,
+    0x2a, 0x86, 0x48, 0x86,
+    0xf7, 0x0d, 0x01, 0x01, 0x01,
+    0x05, 0x00
+  ]);
+
+  // Wrap PKCS#1 RSA key inside PKCS#8
+  const privateKeyOctet = concat([
+    new Uint8Array([0x04]),
+    new Uint8Array(derLength(pkcs1.length)),
+    pkcs1
+  ]);
+
+  const body = concat([
+    new Uint8Array([0x02, 0x01, 0x00]),
+    algorithm,
+    privateKeyOctet
+  ]);
+
+  return concat([
+    new Uint8Array([0x30]),
+    new Uint8Array(derLength(body.length)),
+    body
+  ]);
 }
+
 async function githubToken(env){const now=Math.floor(Date.now()/1000),head=b64urlBytes(enc.encode(JSON.stringify({alg:'RS256',typ:'JWT'}))),body=b64urlBytes(enc.encode(JSON.stringify({iat:now-30,exp:now+540,iss:env.GH_APP_ID}))),unsigned=head+'.'+body;const key=await crypto.subtle.importKey('pkcs8',pemBytes(env.GH_APP_PRIVATE_KEY),{name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'},false,['sign']);const sig=await crypto.subtle.sign('RSASSA-PKCS1-v1_5',key,enc.encode(unsigned));const jwt=unsigned+'.'+b64urlBytes(new Uint8Array(sig));const r=await fetch(`https://api.github.com/app/installations/${env.GH_INSTALLATION_ID}/access_tokens`,{method:'POST',headers:{Authorization:`Bearer ${jwt}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'BaliBellyRecovery-CMS'},body:'{}'});if(!r.ok)throw new Error('GitHub App token gagal dibuat: '+await r.text());return(await r.json()).token}
 async function gh(env,path,method='GET',body){const token=await githubToken(env);const r=await fetch(`https://api.github.com/repos/${env.GH_OWNER}/${env.GH_REPO}/contents/${path}`,{method,headers:{Authorization:`Bearer ${token}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'BaliBellyRecovery-CMS','Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});if(!r.ok)throw new Error(`GitHub API ${r.status}: ${await r.text()}`);return r.status===204?null:r.json()}
 async function readText(env, path) {
