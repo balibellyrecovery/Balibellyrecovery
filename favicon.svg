@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="512" height="512" viewBox="0 0 512 512"
+     role="img" aria-labelledby="title desc">
+  <title id="title">Bali Belly Recovery</title>
+  <desc id="desc">Black serif lettering on a white background inside a rounded black square border.</desc>
+  <rect width="512" height="512" fill="#ffffff"/>
+  <rect x="25" y="25" width="462" height="462" rx="78"
+        fill="none" stroke="#000000" stroke-width="10"/>
+  <g fill="#000000" text-anchor="middle"
+     font-family="Georgia, 'Times New Roman', serif">
+    <text x="256" y="232" font-size="91" font-weight="700"
+          letter-spacing="-5">Bali Belly</text>
+    <text x="256" y="322" font-size="91" font-style="italic"
+          font-weight="700" letter-spacing="-4">Recovery</text>
+  </g>
+</svg>
