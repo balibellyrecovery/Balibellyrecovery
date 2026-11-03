@@ -94,7 +94,7 @@
     document.documentElement.dataset.bbrPromoActive=String(active);document.documentElement.dataset.bbrPromoCode=code;document.documentElement.dataset.bbrPromoDiscount=String(discount);
     return{active,discount,code,name};
   }
-  async function json(url){const r=await fetch(url,{headers:{Accept:'application/json'},cache:'no-store'});if(!r.ok)throw Error('Request failed: '+url);return r.json();}
+  async function json(url,live){const r=await fetch(url,{headers:{Accept:'application/json'},cache:live?'no-store':'no-cache'});if(!r.ok)throw Error('Request failed: '+url);return r.json();}
   function fillAppointment(items,promo){
     const form=document.getElementById('appt'),select=form&&form.elements&&form.elements.pkg;if(!select||!Array.isArray(items))return;
     const urlPackage=new URLSearchParams(location.search).get('package');
@@ -130,15 +130,21 @@
     if([...select.options].some(o=>o.value===keep))select.value=keep;
   }
   try{
-    try{const st=await json(SETTINGS);setVitaminImages(st.homepageImages);}catch(e){console.warn('[Bali Belly Recovery] site-settings unavailable:',e);}
-    let catalogue=await json(CATALOG);
+    /* Ketiga permintaan dimulai bersamaan (sebelumnya berurutan = 3x menunggu jaringan). */
+    const settingsReq=json(SETTINGS).catch(e=>{console.warn('[Bali Belly Recovery] site-settings unavailable:',e);return null;});
+    const catalogueReq=json(CATALOG);
+    const apiReq=json(API,true);apiReq.catch(()=>{});
+    const st=await settingsReq;if(st)setVitaminImages(st.homepageImages);
+    let catalogue=await catalogueReq;
     let packages=Array.isArray(catalogue.packages)?catalogue.packages:[];
-    let promo=applyPromo({});
-    applyPackages(packages);fillAppointment(packages,promo);
+    /* Promo dari site-settings.json langsung dipakai, jadi harga benar sejak tampilan pertama (API hanya menyegarkan). */
+    applyPackages(packages);                       /* kartu dulu (menulis harga dasar)... */
+    let promo=applyPromo((st&&st.promo)||{});      /* ...baru promo (harga coret + harga diskon) */
+    fillAppointment(packages,promo);
     const form=document.getElementById('appt');
     if(form&&!form.dataset.bbrSubmitSync){form.dataset.bbrSubmitSync='1';form.addEventListener('submit',function(){const sel=form.elements.pkg,option=sel&&sel.selectedOptions&&sel.selectedOptions[0];if(option&&option.dataset.packageName){const code=document.documentElement.dataset.bbrPromoCode||'',discount=Number(document.documentElement.dataset.bbrPromoDiscount||0);option.value=option.dataset.packageName+' — '+money(option.dataset.currentPrice)+(discount?' | Promo: '+discount+'%'+(code?' | Code: '+code:''):' | No active promotion');}},true);}
     try{
-      const data=await json(API);
+      const data=await apiReq;
       if(data.homepageImages)setVitaminImages(data.homepageImages);
       if(Array.isArray(data.packages)&&data.packages.length)packages=data.packages;
       applyPackages(packages);

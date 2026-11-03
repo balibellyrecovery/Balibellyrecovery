@@ -46,19 +46,30 @@ button,.button,.btn,[class*="cta"]{transition:transform .18s ease,background-col
 button:hover,.button:hover,.btn:hover{transform:translateY(-1px)}
 :focus-visible{outline:3px solid rgba(169,120,53,.45);outline-offset:3px}
 
-/* Shared header — preserve each page's navigation links, standardize its appearance. */
+/* =====================================================================
+   SHARED TOP BAR — promo banner + header. Same markup and same layout on
+   every page (public pages, blog, 404):
+     <div class="bbr-promo-banner"> + <header class="bbr-site-header">
+       brand · <nav class="bbr-main-nav"> · booking button
+   Desktop: brand left, nav + booking button grouped right.
+   Mobile : brand + booking button on row 1, scrollable nav on row 2.
+   ===================================================================== */
+.bbr-promo-banner,header,header *,footer,footer *{box-sizing:border-box}
 body>header,body>div>header,header.bbr-site-header{
-  width:min(100% - 48px,1200px)!important;
+  position:relative;
+  box-sizing:border-box;
+  width:100%!important;
   max-width:1200px!important;
   margin:0 auto!important;
-  padding:20px 0!important;
+  padding:20px 32px!important;
   display:flex!important;
   flex-wrap:wrap!important;
   align-items:center!important;
-  justify-content:space-between!important;
-  gap:16px 24px!important;
+  justify-content:flex-end!important;
+  gap:12px 20px!important;
   background:transparent!important;
 }
+header.bbr-site-header>.bbr-brand{margin:0 auto 0 0!important}
 header>a:first-child{
   color:var(--bbr-forest)!important;
   text-decoration:none!important;
@@ -70,7 +81,10 @@ header>a:first-child{
   font-weight:600!important;
 }
 header>a:first-child span{
+  display:block;
   font-family:var(--bbr-display-font),Georgia,serif!important;
+  font-size:inherit!important;
+  line-height:inherit!important;
   color:var(--bbr-forest)!important;
 }
 header>a:first-child span+span{font-style:italic!important;font-weight:500!important}
@@ -79,6 +93,8 @@ header nav{
   flex-wrap:wrap!important;
   align-items:center!important;
   gap:10px 20px!important;
+  margin:0!important;
+  padding:0!important;
   color:#3D4650!important;
   font-size:14px!important;
   font-weight:500!important;
@@ -87,6 +103,7 @@ header nav a:not(.btn){
   color:#3D4650!important;
   text-decoration:none!important;
   padding:7px 0!important;
+  white-space:nowrap;
 }
 header nav a:not(.btn):hover,
 header nav a.nav.on,
@@ -110,6 +127,7 @@ header .btn,header>a.btn,header nav a.btn,.bbr-header-booking{
   font-size:14px!important;
   font-weight:600!important;
   line-height:1.2!important;
+  white-space:nowrap!important;
 }
 header .btn:hover,header>a.btn:hover,header nav a.btn:hover{
   background:var(--bbr-forest-deep)!important;
@@ -194,30 +212,50 @@ footer p,footer li,footer span{color:inherit}
 /* Mobile layout: consistent spacing and prevent navigation overflow. */
 @media(max-width:760px){
   body>header,body>div>header,header.bbr-site-header{
-    width:calc(100% - 36px)!important;
-    padding:16px 0!important;
-    gap:12px!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    grid-template-areas:"brand booking" "nav nav"!important;
+    align-items:center!important;
+    column-gap:10px!important;
+    row-gap:12px!important;
+    padding:14px 20px 13px!important;
   }
-  header nav{
-    width:100%!important;
-    gap:7px 15px!important;
-    order:3;
-    font-size:13px!important;
-  }
-  header .btn,header>a.btn,header nav a.btn,.bbr-header-booking{
+  header.bbr-site-header>.bbr-brand{grid-area:brand!important;min-width:0!important;margin:0!important}
+  header.bbr-site-header>.bbr-header-booking{
+    grid-area:booking!important;
+    justify-self:end!important;
+    margin:0!important;
     min-height:42px!important;
-    padding:10px 17px!important;
+    padding:10px 15px!important;
     font-size:13px!important;
   }
+  header.bbr-site-header>.bbr-main-nav{
+    grid-area:nav!important;
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    width:100%!important;
+    min-width:0!important;
+    gap:clamp(12px,4vw,20px)!important;
+    font-size:13px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    white-space:nowrap!important;
+    scrollbar-width:none!important;
+  }
+  header.bbr-site-header>.bbr-main-nav::-webkit-scrollbar{display:none!important}
+  header.bbr-site-header>.bbr-main-nav>a{flex:0 0 auto!important;padding:3px 0!important}
   h1{font-size:clamp(2.15rem,8vw,3rem)!important}
   h2{font-size:clamp(1.8rem,6.5vw,2.25rem)!important}
   main section[style*="padding:"]{padding-left:20px!important;padding-right:20px!important}
   .bbr-promo-banner{font-size:11.5px!important;line-height:1.35!important;padding:8px 12px!important;white-space:normal!important}
 }
+@media(max-width:380px){
+  body>header,body>div>header,header.bbr-site-header{padding-left:14px!important;padding-right:14px!important;column-gap:7px!important}
+  header.bbr-site-header>.bbr-header-booking{padding:9px 11px!important}
+}
 @media(max-width:520px){
   .bbr-promo-banner{font-size:11px!important;padding:8px 10px!important;letter-spacing:.01em!important}
   header>a:first-child{font-size:24px!important}
-  header nav{gap:6px 12px!important}
   .bbr-package{padding:19px!important}
   .bbr-package-top{flex-direction:column!important}
   .bbr-price{text-align:left!important;min-width:0!important}
@@ -279,3 +317,37 @@ button,input,select,textarea{font-family:var(--bbr-body-font),system-ui,sans-ser
 :root body #appt label>select,
 :root body #appt label>textarea{display:block;width:100%;box-sizing:border-box;margin-top:6px;font-weight:400}
 :root body #appt label small{font-weight:400}
+
+/* Shared footer layout (contact row + bottom bar) — identical on every page. */
+footer .bbr-footer-contact{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding-top:18px;border-top:1px solid #E6EAE7;line-height:1.6}
+footer .bbr-footer-contact a,footer .bbr-footer-bottom a{color:#40545A;text-decoration:underline;text-decoration-color:#AAB8B4;text-underline-offset:3px}
+footer .bbr-footer-contact a:hover,footer .bbr-footer-bottom a:hover{color:#133E3D}
+footer .bbr-footer-separator{color:#AAB4B0}
+footer .bbr-footer-bottom{display:grid;grid-template-columns:1fr 1.5fr 1fr;align-items:center;gap:12px;padding-top:18px;border-top:1px solid #E6EAE7;font-size:13px;line-height:1.5;color:#68747A}
+footer .bbr-footer-domain{text-align:center}
+footer .bbr-footer-credit{text-align:right}
+@media(max-width:640px){
+  footer>div{padding:20px 18px!important;gap:12px!important}
+  footer .bbr-footer-contact{gap:7px 10px;padding-top:15px}
+  footer .bbr-footer-bottom{grid-template-columns:1fr;gap:7px;padding-top:15px;text-align:left}
+  footer .bbr-footer-domain,footer .bbr-footer-credit{text-align:left}
+}
+
+/* "Why choose us" di HP: 2 kolom, kartu ringkas agar tidak memakan tempat. */
+@media(max-width:640px){
+  :root body main .bbr-why-choose>div{padding:28px 16px!important;gap:16px!important}
+  :root body main .bbr-why-choose h2{font-size:26px!important;line-height:1.15!important}
+  :root body main .bbr-why-choose>div>div{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  :root body main .bbr-why-choose>div>div>div{padding:14px 13px!important;border-radius:14px!important;gap:6px!important}
+  :root body main .bbr-why-choose h3{font-size:15px!important;line-height:1.25!important}
+  :root body main .bbr-why-choose p{font-size:13px!important;line-height:1.45!important}
+}
+@media(max-width:340px){
+  :root body main .bbr-why-choose>div>div{grid-template-columns:1fr!important}
+}
+
+/* Footer: tautan halaman utama (membantu pengunjung dan Google menemukan halaman penting). */
+footer .bbr-footer-links{display:flex;flex-wrap:wrap;gap:8px 20px;padding-top:18px;margin-top:8px;border-top:1px solid #D9E0DF}
+footer .bbr-footer-links a{color:#133E3D;font-weight:600;font-size:14px;text-decoration:none}
+footer .bbr-footer-links a:hover{text-decoration:underline;text-underline-offset:3px}
+@media(max-width:640px){footer .bbr-footer-links{gap:8px 16px}}
