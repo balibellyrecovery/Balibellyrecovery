@@ -229,3 +229,53 @@ footer p,footer li,footer span{color:inherit}
 
 /* Admin-managed package imagery */
 .bbr-admin-package-image{display:block;width:100%;max-height:220px;object-fit:cover;border-radius:14px;margin:0 0 16px}
+
+/* =====================================================================
+   TYPOGRAPHY SCALE — one scale for every public page (desktop + mobile)
+   Headings : h1 56/34 · h2 41/29 · h3 & h4 24/21 (card titles)
+   Text     : lead 18 · body 16 · secondary 15 · small 14 · caption 13 · eyebrow 12
+   Fonts    : Playfair Display (headings) · DM Sans (everything else)
+   ===================================================================== */
+:root{
+  --bbr-fs-lead:18px;
+  --bbr-fs-body:16px;
+  --bbr-fs-secondary:15px;
+  --bbr-fs-small:14px;
+  --bbr-fs-caption:13px;
+  --bbr-fs-eyebrow:12px;
+}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+:root body main h3,
+:root body main h4{
+  font-size:clamp(1.3rem,2vw,1.5rem)!important;
+  line-height:1.22!important;
+  font-weight:600!important;
+}
+:root body h1+p{font-size:var(--bbr-fs-lead)!important;line-height:1.6!important}
+button,input,select,textarea{font-family:var(--bbr-body-font),system-ui,sans-serif}
+:where(button){font-size:var(--bbr-fs-small)}
+:root body input,:root body select,:root body textarea{font-size:var(--bbr-fs-body)!important}
+.bbr-finder-choice{font-family:var(--bbr-body-font),system-ui,sans-serif}
+@media(max-width:760px){
+  :root body main h3,
+  :root body main h4{font-size:clamp(1.2rem,5.4vw,1.3rem)!important}
+  :root body h1+p{font-size:var(--bbr-fs-lead)!important}
+}
+
+/* Mobile cards: with the shared text scale, keep card grids to one readable column. */
+@media(max-width:640px){
+  :root body .bbr-why-choose>div>div{grid-template-columns:1fr!important;gap:14px!important}
+  :root body .bbr-why-choose>div>div>div{padding:20px!important;border-radius:16px!important;gap:8px!important}
+}
+
+/* Italic accent words inside dark call-to-action bands must stay light, not forest green. */
+:root body main h1[style*="color:#fff"] em,
+:root body main h2[style*="color:#fff"] em,
+:root body main h3[style*="color:#fff"] em{color:inherit!important}
+
+/* Appointment form: label text and required * on one line; entered values in regular weight. */
+:root body #appt label{display:block;font-size:var(--bbr-fs-small)}
+:root body #appt label>input,
+:root body #appt label>select,
+:root body #appt label>textarea{display:block;width:100%;box-sizing:border-box;margin-top:6px;font-weight:400}
+:root body #appt label small{font-weight:400}

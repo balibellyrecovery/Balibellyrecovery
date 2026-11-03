@@ -36,12 +36,12 @@ document.querySelectorAll('[data-home-upload]').forEach(input=>input.addEventLis
 document.querySelectorAll('[data-home-clear]').forEach(btn=>btn.onclick=()=>{const k=btn.dataset.homeClear;document.querySelector(`[data-home-url="${k}"]`).value='';document.querySelector(`[data-home-upload="${k}"]`).value='';document.querySelector(`[data-home-preview="${k}"]`).textContent='Gambar akan dihapus dari homepage setelah disimpan.'});
 $('save-homepage-images').onclick=async()=>{
  const homepageImages={};
- ['hero','essential','tablet','complete'].forEach(k=>{homepageImages[k]={url:document.querySelector(`[data-home-url="${k}"]`).value.trim(),alt:document.querySelector(`[data-home-alt="${k}"]`).value.trim()}});
+ ['hero','bcomplex','multivitamin'].forEach(k=>{homepageImages[k]={url:document.querySelector(`[data-home-url="${k}"]`).value.trim(),alt:document.querySelector(`[data-home-alt="${k}"]`).value.trim()}});
  const btn=$('save-homepage-images');btn.disabled=true;
  try{const d=await request('/api/homepage/images/save',{method:'POST',body:JSON.stringify({homepageImages})});settings.homepageImages=homepageImages;note('Gambar homepage berhasil disimpan ke GitHub. Tunggu deployment GitHub Pages selesai.')}
  catch(e){note(e.message,true)}finally{btn.disabled=false}
 };
-async function getSettings(){try{settings=(await request('/api/settings')).settings||{};const imgs=settings.homepageImages||{};['hero','essential','tablet','complete'].forEach(k=>{const v=imgs[k]||{};const url=document.querySelector(`[data-home-url="${k}"]`);const alt=document.querySelector(`[data-home-alt="${k}"]`);const prev=document.querySelector(`[data-home-preview="${k}"]`);if(url)url.value=v.url||'';if(alt)alt.value=v.alt||'';if(prev)prev.innerHTML=v.url?'<img src="'+esc(v.url)+'" alt="">':'Belum ada gambar'});const p=settings.promo||{};$('promo-enabled').checked=!!p.enabled;$('promo-name').value=p.name||'';$('promo-discount').value=p.discount||'';$('promo-code').value=p.code||'';$('promo-start').value=p.start||'';$('promo-end').value=p.end||'';$('promo-note').value=p.note||'';}catch(e){note('Pengaturan belum dapat dimuat: '+e.message,true)}}
+async function getSettings(){try{settings=(await request('/api/settings')).settings||{};const imgs=settings.homepageImages||{};['hero','bcomplex','multivitamin'].forEach(k=>{const legacy={bcomplex:imgs.essential,multivitamin:imgs.complete};const v=imgs[k]||legacy[k]||{};const url=document.querySelector(`[data-home-url="${k}"]`);const alt=document.querySelector(`[data-home-alt="${k}"]`);const prev=document.querySelector(`[data-home-preview="${k}"]`);if(url)url.value=v.url||'';if(alt)alt.value=v.alt||'';if(prev)prev.innerHTML=v.url?'<img src="'+esc(v.url)+'" alt="">':'Belum ada gambar'});const p=settings.promo||{};$('promo-enabled').checked=!!p.enabled;$('promo-name').value=p.name||'';$('promo-discount').value=p.discount||'';$('promo-code').value=p.code||'';$('promo-start').value=p.start||'';$('promo-end').value=p.end||'';$('promo-note').value=p.note||'';}catch(e){note('Pengaturan belum dapat dimuat: '+e.message,true)}}
 async function saveSettings(){try{await request('/api/settings/save',{method:'POST',body:JSON.stringify(settings)});note('Pengaturan berhasil disimpan ke GitHub.')}catch(e){note(e.message,true)}}
 $('save-promo').onclick=()=>{const enabled=$('promo-enabled').checked,discount=Number($('promo-discount').value||0);if(!Number.isFinite(discount)||discount<0||discount>90)return note('Masukkan diskon antara 0 sampai 90%.',true);if(enabled&&discount<=0)return note('Jika promo diaktifkan, diskon harus lebih dari 0%.',true);const start=$('promo-start').value,end=$('promo-end').value;if(start&&end&&end<start)return note('Tanggal berakhir tidak boleh lebih awal dari tanggal mulai.',true);settings.promo={enabled,name:$('promo-name').value.trim(),discount,code:$('promo-code').value.trim(),start,end,note:$('promo-note').value.trim()};saveSettings()};
 
@@ -98,7 +98,7 @@ let packageItems=[];
 let editingPackageId='';
 const packageFields={
  id:'package-id',name:'package-name',category:'package-category',basePrice:'package-price',
- sortOrder:'package-order',description:'package-description',image:'package-image',imageAlt:'package-image-alt'
+ sortOrder:'package-order',vitaminType:'package-vitamin-type',description:'package-description',image:'package-image',imageAlt:'package-image-alt'
 };
 function packageLines(id){return $(id).value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean)}
 function resetPackageForm(){
@@ -147,7 +147,7 @@ function packagePayload(){
  return{id,name,category,basePrice,sortOrder,description:$('package-description').value.trim(),
   composition:packageLines('package-composition'),vitaminBoosters:packageLines('package-vitamins'),
   additionalComponents:packageLines('package-additional'),serviceIncludes:packageLines('package-service'),
-  image:$('package-image').value.trim(),imageAlt:$('package-image-alt').value.trim(),active:$('package-active').checked};
+  vitaminType:$('package-vitamin-type').value,image:$('package-image').value.trim(),imageAlt:$('package-image-alt').value.trim(),active:$('package-active').checked};
 }
 async function savePackage(){
  const p=packagePayload();if(!p)return note('Nama, kategori dan harga normal wajib diisi dengan benar.',true);

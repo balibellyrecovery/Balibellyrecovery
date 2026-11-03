@@ -127,35 +127,38 @@ async function saveArticle(env,a){if(!a.title||!a.slug||!a.content)throw new Err
 async function readSettings(env){try{return JSON.parse(await readText(env,'content/site-settings.json'))}catch(e){if(String(e).includes('404'))return{};throw e}}
 
 async function saveHomepageImages(env,payload){
- const slots=['hero','essential','tablet','complete'];
+ // hero = dipasang ke index.html lewat penanda; bcomplex & multivitamin = disimpan di site-settings.json
+ // lalu dipasang otomatis ke setiap kartu paket oleh assets/js/promo-sync.js (1 paket = 1 gambar sesuai vitamin).
+ const slots=['hero','bcomplex','multivitamin'];
  const incoming=payload.homepageImages||{};
  const settings=await readSettings(env);
  const saved={...(settings.homepageImages||{})};
+ // Slot lama (essential/tablet/complete) digantikan; pindahkan nilainya bila slot baru belum terisi.
+ if(!saved.bcomplex&&saved.essential)saved.bcomplex=saved.essential;
+ if(!saved.multivitamin&&saved.complete)saved.multivitamin=saved.complete;
+ delete saved.essential;delete saved.tablet;delete saved.complete;
  let html=await readText(env,'index.html');
- const markers={hero:'BBR_HERO_IMAGE',essential:'BBR_PACKAGE_ESSENTIAL_IMAGE',tablet:'BBR_PACKAGE_TABLET_IMAGE',complete:'BBR_PACKAGE_COMPLETE_IMAGE'};
+ const heroMarker='<!-- BBR_HERO_IMAGE -->';
+ const base=ORIGIN+'/assets/uploads/';
  for(const slot of slots){
   const item=incoming[slot]||saved[slot]||{};
   const url=String(item.url||'').trim();
   const alt=String(item.alt||'').trim().slice(0,180);
-  if(url && !(url.startsWith(ORIGIN+'/assets/uploads/') && /^[a-z0-9-]+\.(jpg|jpeg|png|webp|gif)$/i.test(url.slice((ORIGIN+'/assets/uploads/').length))))throw new Error('URL gambar '+slot+' tidak valid. Gunakan gambar yang diunggah melalui Media Library.');
+  if(url && !(url.startsWith(base) && /^[a-z0-9-]+\.(jpg|jpeg|png|webp|gif)$/i.test(url.slice(base.length))))throw new Error('URL gambar '+slot+' tidak valid. Gunakan gambar yang diunggah melalui Media Library.');
   saved[slot]={url,alt};
-  const marker='<!-- '+markers[slot]+' -->';
-  if(!html.includes(marker)){
+  if(slot!=='hero')continue;
+  if(!html.includes(heroMarker)){
    if(!url) continue;
-   throw new Error('Penanda slot gambar '+slot+' tidak ditemukan di index.html. Slot ini belum tersedia pada homepage. Kosongkan slot tersebut atau tambahkan slot pada index.html terlebih dahulu.');
+   throw new Error('Penanda slot gambar hero tidak ditemukan di index.html.');
   }
-  const cls=slot==='hero'?'bbr-home-image':'bbr-package-image';
-  // Remove a previously CMS-injected image immediately before this marker,
-  // so saving again replaces it instead of creating duplicate images.
-  const previousImage = new RegExp('<img class="' + cls + '"[^>]*>\\s*(?=' + marker + ')');
-  html = html.replace(previousImage, '');
-  const markup=url?`<img class="${cls}" src="${esc(url)}" alt="${esc(alt||'Bali Belly Recovery medical care in Bali')}" loading="${slot==='hero'?'eager':'lazy'}">\n`:'';
-  // Keep the marker in place so future image changes and removals continue to work.
-  html=html.replace(marker,markup+marker);
+  // Hapus gambar hero hasil CMS sebelumnya agar tidak menumpuk.
+  html=html.replace(new RegExp('<img class="bbr-home-image"[^>]*>\\s*(?='+heroMarker+')'),'');
+  const markup=url?`<img class="bbr-home-image" src="${esc(url)}" alt="${esc(alt||'Bali Belly Recovery medical care in Bali')}" loading="eager">\n`:'';
+  html=html.replace(heroMarker,markup+heroMarker);
  }
- await putText(env,'index.html',html,'Update homepage images from CMS');
- await putText(env,'content/site-settings.json',JSON.stringify({...settings,homepageImages:saved},null,2),'Save homepage image settings');
- return{ok:true,homepageImages:saved,note:'Homepage images saved. Wait for GitHub Pages deployment.'};
+ await putText(env,'index.html',html,'Update homepage hero image from CMS');
+ await putText(env,'content/site-settings.json',JSON.stringify({...settings,homepageImages:saved},null,2),'Save homepage and package vitamin images');
+ return{ok:true,homepageImages:saved,note:'Images saved. Package images follow the vitamin type automatically. Wait for GitHub Pages deployment.'};
 }
 
 
@@ -182,6 +185,7 @@ function cleanPackage(p,index){
   serviceIncludes:lines(p.serviceIncludes),
   image:(()=>{const u=String(p.image||'').trim();if(u&&!u.startsWith(ORIGIN+'/assets/uploads/'))throw new Error('Gambar paket harus diunggah melalui Media Library.');return u.slice(0,500)})(),
   imageAlt:String(p.imageAlt||'').trim().slice(0,180),
+  vitaminType:['bcomplex','multivitamin'].includes(p.vitaminType)?p.vitaminType:'',
   active:p.active!==false,
   sortOrder:Math.max(1,Math.round(Number(p.sortOrder)||index+1))
  };

@@ -3,6 +3,7 @@
   'use strict';
   const API='https://api.balibellyrecovery.com/api/public/homepage';
   const CATALOG=location.pathname.includes('/blog/')?'../content/packages.json':'content/packages.json';
+  const SETTINGS=CATALOG.replace('packages.json','site-settings.json');
   const FALLBACK='Bali Belly Doctor & Nurse Home Visit Service';
   const money=n=>'Rp '+Math.round(Number(n)||0).toLocaleString('id-ID');
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -18,15 +19,34 @@
     if(!sub){sub=document.createElement('div');sub.className='bbr-subsection';const h=document.createElement('div');h.className='bbr-subtitle';h.textContent=title;const ul=document.createElement('ul');ul.className='bbr-list bbr-component-list';sub.append(h,ul);panel.append(sub);}
     setList(sub.querySelector('ul'),items);
   }
+  /* Gambar paket mengikuti vitamin: 1 paket = 1 gambar (B-Complex atau Multivitamin), diatur dari Admin > Media / Gambar. */
+  let vitaminImages={};
+  function vitaminKey(p){
+    if(p&&(p.vitaminType==='bcomplex'||p.vitaminType==='multivitamin'))return p.vitaminType;
+    const text=((p&&p.category)||'')+' '+((p&&p.name)||'');
+    return /multivitamin/i.test(text)?'multivitamin':'bcomplex';
+  }
+  function setVitaminImages(imgs){
+    if(!imgs||typeof imgs!=='object')return;
+    const pick=(a,b)=>(a&&a.url)?a:((b&&b.url)?b:null);
+    vitaminImages={bcomplex:pick(imgs.bcomplex,imgs.essential),multivitamin:pick(imgs.multivitamin,imgs.complete)};
+  }
+  function packageImage(p){
+    if(p.image)return{url:p.image,alt:p.imageAlt||p.name};
+    const v=vitaminImages[vitaminKey(p)];
+    return v&&v.url?{url:v.url,alt:v.alt||p.name}:null;
+  }
   function updateCard(card,p){
     card.dataset.packageId=p.id;card.dataset.packageActive=String(p.active!==false);
     const kicker=card.querySelector('.bbr-package-kicker');if(kicker)kicker.textContent=p.category||'Bali Belly Package';
     const title=card.querySelector('h4');if(title)title.textContent=p.name||'Bali Belly Package';
     const desc=card.querySelector('.bbr-package-sub');if(desc)desc.textContent=p.description||'Doctor and nurse home visit with package components, following a doctor’s assessment.';
     let packageImg=card.querySelector('.bbr-admin-package-image');
-    if(p.image){
+    const pic=packageImage(p);
+    if(pic){
       if(!packageImg){packageImg=document.createElement('img');packageImg.className='bbr-admin-package-image';const top=card.querySelector('.bbr-package-top');if(top)card.insertBefore(packageImg,top);}
-      packageImg.src=p.image;packageImg.alt=p.imageAlt||p.name||'Bali Belly Recovery package';packageImg.loading='lazy';
+      if(packageImg.getAttribute('src')!==pic.url)packageImg.src=pic.url;
+      packageImg.alt=pic.alt||p.name||'Bali Belly Recovery package';packageImg.loading='lazy';
     }else packageImg?.remove();
     const price=card.querySelector('.bbr-new');if(price){price.dataset.basePrice=String(p.basePrice||0);price.textContent=money(p.basePrice);}
     const panels=card.querySelectorAll('.bbr-package-columns .bbr-panel');
@@ -77,14 +97,40 @@
   async function json(url){const r=await fetch(url,{headers:{Accept:'application/json'},cache:'no-store'});if(!r.ok)throw Error('Request failed: '+url);return r.json();}
   function fillAppointment(items,promo){
     const form=document.getElementById('appt'),select=form&&form.elements&&form.elements.pkg;if(!select||!Array.isArray(items))return;
-    const wanted=new URLSearchParams(location.search).get('package')||select.value;
-    const frag=document.createDocumentFragment(),blank=document.createElement('option');blank.value='';blank.textContent='Select a recovery package';frag.appendChild(blank);
-    items.filter(item=>item.active!==false).sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0)).forEach(item=>{const amount=promo.active?item.basePrice*(1-promo.discount/100):item.basePrice;const option=document.createElement('option');option.value=item.id;option.textContent=item.name+' — '+money(amount)+(promo.active?' ('+promo.discount+'% off'+(promo.code?', code '+promo.code:'')+')':'');option.dataset.packageName=item.name;option.dataset.currentPrice=String(Math.round(amount));frag.appendChild(option);});
-    const unsure=document.createElement('option');unsure.value='not-sure';unsure.textContent="I'm not sure — please advise";frag.appendChild(unsure);select.replaceChildren(frag);
+    const urlPackage=new URLSearchParams(location.search).get('package');
     const legacy={'essential-recovery':'package-01','recovery-plus':'package-03','complete-recovery':'package-07','bali-belly':'package-01'};
-    const desired=legacy[wanted]||wanted;if([...select.options].some(o=>o.value===desired))select.value=desired;
+    const active=items.filter(item=>item.active!==false).sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
+    const makeOption=item=>{const amount=promo.active?item.basePrice*(1-promo.discount/100):item.basePrice;const option=document.createElement('option');option.value=item.id;option.textContent=item.name+' — '+money(amount)+(promo.active?' ('+promo.discount+'% off'+(promo.code?', code '+promo.code:'')+')':'');option.dataset.packageName=item.name;option.dataset.currentPrice=String(Math.round(amount));return option;};
+    const chosen=urlPackage?active.find(item=>item.id===(legacy[urlPackage]||urlPackage)):null;
+    let note=document.getElementById('bbr-selected-package-note');
+    if(chosen){
+      /* Patient arrived from "BOOK THIS PACKAGE": show only the chosen package, no re-selection needed. */
+      select.replaceChildren(makeOption(chosen));
+      select.value=chosen.id;
+      select.dataset.lockedPackage='true';
+      /* Long package names do not fit inside a <select> on phones: show a wrapped card and keep the select hidden (it still submits the value). */
+      select.style.display='none';
+      let card=document.getElementById('bbr-selected-package-card');
+      if(!card){card=document.createElement('div');card.id='bbr-selected-package-card';card.style.cssText='margin-top:6px;padding:14px 16px;border:1px solid #133E3D;border-radius:12px;background:#EAF0EC;color:#133E3D;line-height:1.4';select.parentNode.insertBefore(card,select.nextSibling);}
+      const label=select.options[0].textContent.split(' — ');
+      card.innerHTML='';
+      const nm=document.createElement('strong');nm.style.cssText='display:block;font-size:16px;font-weight:700';nm.textContent=chosen.name;card.appendChild(nm);
+      const pr=document.createElement('span');pr.style.cssText='display:block;margin-top:2px;font-size:14px;font-weight:400;color:#334B43';pr.textContent=label.slice(1).join(' — ');card.appendChild(pr);
+      if(!note){note=document.createElement('small');note.id='bbr-selected-package-note';note.style.cssText='display:block;margin-top:6px;font-size:12px;line-height:1.5;color:#52615c;font-weight:400';select.parentNode.appendChild(note);}
+      note.innerHTML='Package selected from our package list. <a href="packages.html" style="text-decoration:underline;font-weight:700;color:#133E3D">Change package</a>';
+      return;
+    }
+    /* Direct visit (no package chosen): show the full list. */
+    if(note)note.remove();
+    select.dataset.lockedPackage='';select.style.display='';document.getElementById('bbr-selected-package-card')?.remove();
+    const frag=document.createDocumentFragment(),blank=document.createElement('option');blank.value='';blank.textContent='Select a recovery package';frag.appendChild(blank);
+    active.forEach(item=>frag.appendChild(makeOption(item)));
+    const unsure=document.createElement('option');unsure.value='not-sure';unsure.textContent="I'm not sure — please advise";frag.appendChild(unsure);
+    const keep=select.value;select.replaceChildren(frag);
+    if([...select.options].some(o=>o.value===keep))select.value=keep;
   }
   try{
+    try{const st=await json(SETTINGS);setVitaminImages(st.homepageImages);}catch(e){console.warn('[Bali Belly Recovery] site-settings unavailable:',e);}
     let catalogue=await json(CATALOG);
     let packages=Array.isArray(catalogue.packages)?catalogue.packages:[];
     let promo=applyPromo({});
@@ -93,6 +139,7 @@
     if(form&&!form.dataset.bbrSubmitSync){form.dataset.bbrSubmitSync='1';form.addEventListener('submit',function(){const sel=form.elements.pkg,option=sel&&sel.selectedOptions&&sel.selectedOptions[0];if(option&&option.dataset.packageName){const code=document.documentElement.dataset.bbrPromoCode||'',discount=Number(document.documentElement.dataset.bbrPromoDiscount||0);option.value=option.dataset.packageName+' — '+money(option.dataset.currentPrice)+(discount?' | Promo: '+discount+'%'+(code?' | Code: '+code:''):' | No active promotion');}},true);}
     try{
       const data=await json(API);
+      if(data.homepageImages)setVitaminImages(data.homepageImages);
       if(Array.isArray(data.packages)&&data.packages.length)packages=data.packages;
       applyPackages(packages);
       promo=applyPromo(data.promo||{});
