@@ -1,6 +1,6 @@
 {
   "promo": {
-    "enabled": true,
+    "enabled": false,
     "name": "Vacation Saver Promo",
     "discount": 10,
     "code": "BALIBELLY",
