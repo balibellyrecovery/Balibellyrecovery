@@ -1,17 +1,20 @@
 {
   "promo": {
-    "enabled": false,
+    "enabled": true,
     "name": "Vacation Saver Promo",
-    "discount": 10,
-    "code": "BALIBELLY",
+    "discount": 15,
+    "code": "SAVE15",
     "start": "2026-11-01",
     "end": "2026-11-11",
-    "note": "15% off the three Bali Belly Recovery packages. Confirm eligibility and current offer with the team when booking."
+    "note": "15% off Bali Belly packages. The promotional prices are displayed on the homepage. Confirm package inclusions and availability with the team when booking."
   },
   "package": {
     "name": "Bali Belly Recovery Packages",
     "price": 2025000,
-    "description": "Three packages: Essential, Bali Belly + Tablet Medication, and Complete. Prices shown on the website include the active 15% SAVE15 promotion."
+    "description": "The homepage is the reference for the current Bali Belly package catalogue and promotional prices. Displayed promotional prices reflect the active 15% SAVE15 offer.",
+    "catalogueSource": "homepage",
+    "catalogueCount": 16,
+    "cataloguePage": "packages.html"
   },
   "homepageImages": {
     "hero": {
@@ -34,18 +37,18 @@
   "gallery": [
     {
       "url": "https://balibellyrecovery.com/assets/uploads/gallery-1793614984700-0.jpg",
-      "caption": "",
-      "alt": ""
+      "caption": "Care at your villa or resort",
+      "alt": "Patient receiving Bali Belly care in a bamboo villa"
     },
     {
       "url": "https://balibellyrecovery.com/assets/uploads/gallery-1793615182495-1.jpg",
-      "caption": "",
-      "alt": ""
+      "caption": "Meet your doctor & nurse team",
+      "alt": "Bali Belly Recovery nurse with two guests after a home visit"
     },
     {
       "url": "https://balibellyrecovery.com/assets/uploads/gallery-1793616612416-2.jpg",
-      "caption": "",
-      "alt": ""
+      "caption": "Comfort-first care, wherever you stay",
+      "alt": "Doctor and nurse treating a guest on a villa terrace in Bali"
     }
   ]
 }

@@ -1,22 +1,9 @@
 <!DOCTYPE html>
 
-<html lang="id"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="noindex,nofollow" name="robots"/><title>Admin CMS | Bali Belly Recovery</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&amp;family=Playfair+Display:wght@500;600;700&amp;display=swap" rel="stylesheet"/><link href="admin.css" rel="stylesheet"/></head>
+<html lang="id"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="noindex,nofollow" name="robots"/><title>Admin CMS | Bali Belly Recovery</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&amp;family=Playfair+Display:wght@500;600;700&amp;display=swap" rel="stylesheet"/><link href="admin.css" rel="stylesheet"/>
+</head>
 <body>
-<style>
-.layout{display:none!important}
-body.admin-authenticated .layout{display:flex!important}
-#bbr-login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#f7f5ef;font-family:"DM Sans",Arial,sans-serif;color:#173f3a}
-#bbr-login .login-card{width:min(100%,440px);background:#fff;border:1px solid #e6dfd2;border-radius:22px;padding:34px;box-shadow:0 18px 55px rgba(20,55,48,.08)}
-#bbr-login .login-brand{font:600 30px Georgia,serif;margin:0 0 5px}
-#bbr-login .login-sub{color:#77817b;margin:0 0 26px}
-#bbr-login label{display:block;font-weight:600;font-size:14px;margin:16px 0 7px}
-#bbr-login input{box-sizing:border-box;width:100%;padding:14px 15px;border:1px solid #d9ded8;border-radius:12px;font:inherit}
-#bbr-login button{width:100%;margin-top:20px;border:0;border-radius:30px;background:#b58a4a;color:#142f2b;padding:14px;font-weight:700;font-size:15px;cursor:pointer}
-#bbr-login button:disabled{opacity:.6;cursor:wait}
-#bbr-login .login-error{color:#a33b32;font-size:13px;min-height:20px;margin-top:12px}
-#logout-btn{margin-left:14px;border:1px solid #dfd8cb;border-radius:24px;background:#fff;padding:10px 16px;color:#173f3a;font-weight:600;cursor:pointer}
-@media(max-width:600px){#bbr-login .login-card{padding:25px}}
-</style>
+
 <section id="bbr-login" aria-label="Admin login">
  <form class="login-card" id="bbr-login-form">
   <p class="login-brand">Bali Belly Recovery</p>
@@ -29,9 +16,36 @@ body.admin-authenticated .layout{display:flex!important}
   <div class="login-error" id="bbr-login-error" role="alert"></div>
  </form>
 </section>
-<div class="layout"><aside class="sidebar"><a class="brand" href="./"><span>BBR</span><div><b>Bali Belly</b><small>RECOVERY · ADMIN</small></div></a><nav><button class="nav active" data-view="dashboard">▦ <span>Dashboard</span></button><button class="nav" data-view="articles">▤ <span>Artikel Blog</span></button><button class="nav" data-view="editor">＋ <span>Tulis Artikel</span></button><button class="nav" data-view="media">▧ <span>Media / Gambar</span></button><button class="nav" data-view="promotions">％ <span>Promo</span></button><button class="nav" data-view="settings">⚙ <span>Pengaturan</span></button></nav><div class="sidefoot">Area administrasi privat<br/>Konten disimpan ke GitHub.</div></aside>
+<div class="layout"><aside class="sidebar"><a class="brand" href="./"><span>BBR</span><div><b>Bali Belly</b><small>RECOVERY · ADMIN</small></div></a><nav><button class="nav active" data-view="dashboard">▦ <span>Dashboard</span></button><button class="nav" data-view="packages">▣ <span>Manajemen Paket</span></button><button class="nav" data-view="articles">▤ <span>Artikel Blog</span></button><button class="nav" data-view="editor">＋ <span>Tulis Artikel</span></button><button class="nav" data-view="media">▧ <span>Media / Gambar</span></button><button class="nav" data-view="promotions">％ <span>Promo</span></button><button class="nav" data-view="settings">⚙ <span>Pengaturan</span></button></nav><div class="sidefoot">Area administrasi privat<br/>Konten disimpan ke GitHub.</div></aside>
 <main class="main"><header class="top"><div><small>BALI BELLY RECOVERY</small><h1 id="page-title">Dashboard</h1></div><div><a href="https://balibellyrecovery.com/" rel="noopener" target="_blank">Lihat Website ↗</a><button id="logout-btn" type="button">Keluar</button></div></header><div class="notice" hidden="" id="notice"></div>
 <section class="view active" id="view-dashboard"><div class="hero"><div><small>CONTENT MANAGEMENT SYSTEM</small><h2>Publish helpful Bali Belly guides.</h2><p>Kelola artikel edukasi, gambar, dan konten website dari satu dashboard.</p></div><button class="primary" data-go="editor">＋ Tulis Artikel</button></div><div class="stats"><div><small>Total Artikel</small><b id="total">—</b></div><div><small>Published</small><b id="published">—</b></div><div><small>Draft</small><b id="drafts">—</b></div></div><div class="panel"><div class="panelhead"><div><h3>Artikel terbaru</h3><p>Artikel yang tersimpan di repository website.</p></div><button class="secondary" data-go="articles">Lihat semua</button></div><div class="rows" id="recent">Hubungkan CMS API untuk memuat data.</div></div></section>
+
+<section class="view" id="view-packages">
+ <div class="panel package-admin-intro">
+  <div class="panelhead"><div><h3>Manajemen Paket</h3><p>Kelola nama, harga, deskripsi, komposisi, vitamin, komponen tambahan dan layanan untuk seluruh halaman website.</p></div><button class="primary" id="package-new" type="button">＋ Tambah Paket</button></div>
+  <div class="package-admin-note">Katalog ini menjadi sumber data pusat. Perubahan akan disinkronkan ke seluruh halaman yang menampilkan paket, termasuk pilihan paket pada formulir booking. Harga promo dihitung otomatis dari harga normal.</div>
+ </div>
+ <div class="package-admin-layout">
+  <div class="panel"><div class="panelhead"><div><h3>Daftar Paket</h3><p id="package-count">Memuat katalog...</p></div><button class="secondary" id="package-reload" type="button">Muat Ulang</button></div><div id="package-list" class="package-list"></div></div>
+  <div class="panel package-editor-panel">
+   <div class="panelhead"><div><h3 id="package-form-title">Tambah Paket Baru</h3><p>Isi informasi paket. Pisahkan setiap item inclusions dengan baris baru.</p></div><span class="tag">PACKAGE EDITOR</span></div>
+   <input id="package-id" type="hidden"/>
+   <div class="two"><label>Nama Paket<input id="package-name" required placeholder="Contoh: Essential Recovery"/></label><label>Kategori<input id="package-category" required placeholder="B-Complex Package"/></label></div>
+   <div class="two"><label>Harga Normal (Rp)<input id="package-price" type="number" min="1" step="1" required placeholder="2025000"/></label><label>Urutan di Form Booking<input id="package-order" type="number" min="1" step="1" value="17"/></label></div>
+   <label>Deskripsi Paket<textarea id="package-description" rows="3" placeholder="Ringkasan paket yang tampil di kartu paket."></textarea></label>
+   <label>Package Composition<textarea id="package-composition" rows="5" placeholder="Electrolyte Solution&#10;Anti-Nausea Medication&#10;Stomach Protector"></textarea></label>
+   <label>Vitamin Boosters<textarea id="package-vitamins" rows="3" placeholder="Vitamin B Complex (B1, B6, B12)"></textarea></label>
+   <label>Additional Components<textarea id="package-additional" rows="3" placeholder="Additional Electrolyte Solution"></textarea></label>
+   <label>Service Includes<textarea id="package-service" rows="4" placeholder="24/7 doctor and nurse home visit&#10;Doctor Consultation"></textarea></label>
+   <label>Image URL (opsional) <small>Unggah gambar melalui Media Library, lalu tempel URL hasil upload di sini.</small><input id="package-image" placeholder="https://balibellyrecovery.com/assets/uploads/..."/></label>
+   <label>Image ALT Text<input id="package-image-alt" placeholder="Describe the package image"/></label>
+   <label class="check"><input id="package-active" type="checkbox" checked/> Tampilkan paket di website dan formulir booking</label>
+   <div class="actions"><button class="secondary" id="package-reset" type="button">Kosongkan Form</button><button class="primary" id="package-save" type="button">Simpan Paket</button></div>
+   <p class="help">Menghapus paket akan menghilangkannya dari katalog aktif dan pilihan booking. Paket tidak akan dihapus dari riwayat booking lama.</p>
+  </div>
+ </div>
+</section>
+
 <section class="view" id="view-articles"><div class="panel"><div class="panelhead"><div><h3>Artikel Blog</h3><p>Kelola artikel draft dan yang sudah diterbitkan.</p></div><button class="primary" data-go="editor">＋ Artikel Baru</button></div><div class="rows" id="article-list">Belum terhubung.</div></div></section>
 <section class="view" id="view-editor"><div class="editor"><div class="panel"><div class="panelhead"><div><h3 id="editor-title">Tulis Artikel Baru</h3><p>Buat artikel edukatif dengan format editorial Bali Belly Recovery, optimasi SEO, lalu simpan atau terbitkan.</p></div><span class="tag">EDITOR MANUAL</span></div><input id="original-slug" type="hidden"/><label>Judul Artikel<input id="title" placeholder="Contoh: Bali Belly: Gejala dan Kapan Perlu Bantuan Medis"/></label><label>URL Slug<input id="slug" placeholder="bali-belly-gejala"/></label><label>Ringkasan / Excerpt<textarea id="excerpt" placeholder="Ringkasan yang tampil di halaman Blog" rows="2"></textarea></label><label>Isi Artikel <small>Gunakan Markdown: # H1, ## H2, ### H3, **tebal**, daftar, dan tautan. Susun artikel dengan paragraf pendek dan subjudul yang jelas.</small><textarea class="content" id="content" placeholder="## Introduction
 
@@ -53,4 +67,5 @@ Add clear, medically reviewed information..." rows="18"></textarea></label><div 
 </section>
 <section class="view" id="view-promotions"><div class="panel narrow"><h3>Pengaturan Promo</h3><p>Atur promo dari sini. Persentase diskon akan otomatis menghitung ulang harga seluruh 16 paket berdasarkan harga normal yang tersimpan di homepage. Promo dapat diaktifkan atau dinonaktifkan tanpa mengedit harga paket satu per satu.</p><label><span class="check"><input id="promo-enabled" type="checkbox"/> Aktifkan promo</span></label><label>Nama Promo<input id="promo-name" placeholder="Special Offer"/></label><div class="two"><label>Diskon (%)<input id="promo-discount" max="90" min="0" type="number"/></label><label>Kode Promo<input id="promo-code"/></label></div><div class="two"><label>Tanggal Mulai<input id="promo-start" type="date"/></label><label>Tanggal Berakhir<input id="promo-end" type="date"/></label></div><label>Catatan / Ketentuan<textarea id="promo-note" rows="3"></textarea></label><button class="primary" id="save-promo">Simpan Pengaturan Promo</button><p class="help">Catatan: harga normal menjadi dasar perhitungan. Saat promo aktif, harga promo dan banner diperbarui otomatis. Saat promo nonaktif atau di luar tanggal berlaku, harga normal ditampilkan.</p></div></section>
 <section class="view" id="view-settings"><div class="panel narrow"><h3>Koneksi CMS</h3><label>Cloudflare Worker API URL<input id="api-url" placeholder="https://api.balibellyrecovery.com"/></label><button class="primary" id="save-settings">Simpan Koneksi</button><button class="secondary" id="test-connection">Tes Koneksi</button><p class="help">Jangan masukkan GitHub token, private key, atau password ke dashboard. Rahasia disimpan di Cloudflare Worker.</p><hr/><h3>Keamanan</h3><p>Dashboard dan API dilindungi login admin. Gunakan email dan password yang disimpan sebagai Secret di Cloudflare Worker. Jangan membagikan kredensial admin.</p></div></section>
-<footer>© Bali Belly Recovery · CMS Admin</footer></main></div><script defer="" src="admin.js"></script></body></html>
+<footer>© Bali Belly Recovery · CMS Admin</footer></main></div><script defer="" src="admin.js"></script>
+</body></html>

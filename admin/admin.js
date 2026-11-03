@@ -1,7 +1,7 @@
 const $=id=>document.getElementById(id);let articles=[];let settings={};const APIKEY='bbrCmsApi';const DEFAULT_API='https://api.balibellyrecovery.com';
 function api(){return(localStorage.getItem(APIKEY)||$('api-url')?.value||DEFAULT_API).replace(/\/$/,'')}
 function note(s,error=false){const n=$('notice');n.hidden=false;n.textContent=s;n.className='notice'+(error?' error':'');window.scrollTo({top:0,behavior:'smooth'})}
-function show(v){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id==='view-'+v));document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.view===v));$('page-title').textContent=({dashboard:'Dashboard',articles:'Artikel Blog',editor:'Tulis Artikel',media:'Media / Gambar',promotions:'Pengaturan Promo',settings:'Pengaturan'})[v]||v}
+function show(v){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id==='view-'+v));document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.view===v));$('page-title').textContent=({dashboard:'Dashboard',packages:'Manajemen Paket',articles:'Artikel Blog',editor:'Tulis Artikel',media:'Media / Gambar',promotions:'Pengaturan Promo',settings:'Pengaturan'})[v]||v}
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>show(b.dataset.view));document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{if(b.dataset.go==='editor')clearEditor();show(b.dataset.go)});
 function slugify(s){return(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
 function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -55,6 +55,7 @@ async function enterAdmin(){
  document.body.classList.add('admin-authenticated');
  $('bbr-login').style.display='none';
  await loadArticles();
+ await loadPackages();
  await getSettings();
 }
 $('bbr-login-form').addEventListener('submit',async e=>{
@@ -90,3 +91,88 @@ async function loadBbrGallery(){try{const d=await request('/api/settings');bbrGa
 $('bbr-save-gallery')?.addEventListener('click',async()=>{const items=[];for(let i=0;i<8;i++){const url=document.querySelector(`[data-gallery-url="${i}"]`)?.value.trim()||'';const caption=document.querySelector(`[data-gallery-caption="${i}"]`)?.value.trim()||'';const alt=document.querySelector(`[data-gallery-alt="${i}"]`)?.value.trim()||'';if(url)items.push({url,caption,alt})}try{await request('/api/homepage/gallery/save',{method:'POST',body:JSON.stringify({gallery:items})});bbrGallery=items;note('Treatment Gallery tersimpan. Homepage akan diperbarui setelah GitHub Pages selesai deployment.')}catch(e){note(e.message,true)}});
 const bbrOriginalGetSettings=getSettings;
 getSettings=async function(){await bbrOriginalGetSettings();await loadBbrGallery()};
+
+
+// Central package catalogue CRUD — stored in content/packages.json through the CMS Worker.
+let packageItems=[];
+let editingPackageId='';
+const packageFields={
+ id:'package-id',name:'package-name',category:'package-category',basePrice:'package-price',
+ sortOrder:'package-order',description:'package-description',image:'package-image',imageAlt:'package-image-alt'
+};
+function packageLines(id){return $(id).value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean)}
+function resetPackageForm(){
+ editingPackageId='';
+ Object.values(packageFields).forEach(id=>$(id).value='');
+ ['package-composition','package-vitamins','package-additional','package-service'].forEach(id=>$(id).value='');
+ $('package-active').checked=true;
+ $('package-order').value=String(packageItems.length+1);
+ $('package-form-title').textContent='Tambah Paket Baru';
+ $('package-save').textContent='Simpan Paket';
+ document.querySelectorAll('.package-list-item').forEach(x=>x.classList.remove('selected'));
+}
+function renderPackageList(){
+ const host=$('package-list');if(!host)return;
+ const sorted=[...packageItems].sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
+ $('package-count').textContent=sorted.length+' paket dalam katalog · '+sorted.filter(p=>p.active!==false).length+' aktif';
+ host.innerHTML=sorted.map(p=>`<div class="package-list-item ${p.id===editingPackageId?'selected':''}" data-package-row="${esc(p.id)}"><div class="package-list-main"><strong>${esc(p.name)}</strong><small>${esc(p.category)} · ${money(p.basePrice)}</small><span class="package-status ${p.active===false?'off':''}">${p.active===false?'NONAKTIF':'AKTIF'}</span></div><div class="package-list-actions"><button class="secondary" type="button" data-package-edit="${esc(p.id)}">Edit</button><button class="secondary" type="button" data-package-delete="${esc(p.id)}">Hapus</button></div></div>`).join('')||'<p class="muted">Belum ada paket. Klik Tambah Paket untuk membuat paket pertama.</p>';
+ host.querySelectorAll('[data-package-edit]').forEach(b=>b.onclick=()=>editPackage(b.dataset.packageEdit));
+ host.querySelectorAll('[data-package-delete]').forEach(b=>b.onclick=()=>deletePackage(b.dataset.packageDelete));
+}
+function money(n){return 'Rp '+Math.round(Number(n)||0).toLocaleString('id-ID')}
+function editPackage(id){
+ const p=packageItems.find(x=>x.id===id);if(!p)return;
+ editingPackageId=id;
+ Object.entries(packageFields).forEach(([key,field])=>$(field).value=p[key]??'');
+ $('package-composition').value=(p.composition||[]).join('\n');
+ $('package-vitamins').value=(p.vitaminBoosters||[]).join('\n');
+ $('package-additional').value=(p.additionalComponents||[]).join('\n');
+ $('package-service').value=(p.serviceIncludes||[]).join('\n');
+ $('package-active').checked=p.active!==false;
+ $('package-form-title').textContent='Edit Paket';
+ $('package-save').textContent='Simpan Perubahan';
+ renderPackageList();
+ $('package-editor-title')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function loadPackages(){
+ try{
+  const d=await request('/api/packages');packageItems=Array.isArray(d.packages)?d.packages:[];
+  renderPackageList();if(!$('package-id').value)resetPackageForm();
+ }catch(e){if($('package-list'))$('package-list').innerHTML='<p class="muted">'+esc(e.message)+'</p>'}
+}
+function packagePayload(){
+ const name=$('package-name').value.trim(),category=$('package-category').value.trim(),basePrice=Number($('package-price').value),sortOrder=Number($('package-order').value||packageItems.length+1);
+ if(!name||!category||!Number.isFinite(basePrice)||basePrice<1)return null;
+ const id=editingPackageId||('package-'+Date.now().toString(36));
+ return{id,name,category,basePrice,sortOrder,description:$('package-description').value.trim(),
+  composition:packageLines('package-composition'),vitaminBoosters:packageLines('package-vitamins'),
+  additionalComponents:packageLines('package-additional'),serviceIncludes:packageLines('package-service'),
+  image:$('package-image').value.trim(),imageAlt:$('package-image-alt').value.trim(),active:$('package-active').checked};
+}
+async function savePackage(){
+ const p=packagePayload();if(!p)return note('Nama, kategori dan harga normal wajib diisi dengan benar.',true);
+ const duplicate=packageItems.find(x=>x.id!==p.id&&x.name.trim().toLowerCase()===p.name.toLowerCase());
+ if(duplicate)return note('Nama paket sudah digunakan. Gunakan nama yang berbeda.',true);
+ const next=packageItems.filter(x=>x.id!==p.id).concat(p).sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
+ const btn=$('package-save');btn.disabled=true;btn.textContent='Menyimpan...';
+ try{
+  const d=await request('/api/packages/save',{method:'POST',body:JSON.stringify({packages:next})});
+  packageItems=d.packages||next;resetPackageForm();renderPackageList();
+  note('Katalog paket berhasil disimpan. Perubahan akan tampil di seluruh halaman setelah deployment GitHub Pages selesai.');
+ }catch(e){note(e.message,true)}
+ finally{btn.disabled=false;btn.textContent=editingPackageId?'Simpan Perubahan':'Simpan Paket'}
+}
+async function deletePackage(id){
+ const p=packageItems.find(x=>x.id===id);if(!p)return;
+ if(!window.confirm('Hapus paket "'+p.name+'" dari katalog website? Paket tidak akan muncul pada halaman atau formulir booking.'))return;
+ const next=packageItems.filter(x=>x.id!==id);
+ try{
+  const d=await request('/api/packages/save',{method:'POST',body:JSON.stringify({packages:next})});
+  packageItems=d.packages||next;if(editingPackageId===id)resetPackageForm();renderPackageList();
+  note('Paket berhasil dihapus dari katalog aktif.');
+ }catch(e){note(e.message,true)}
+}
+$('package-new')?.addEventListener('click',resetPackageForm);
+$('package-reset')?.addEventListener('click',resetPackageForm);
+$('package-save')?.addEventListener('click',savePackage);
+$('package-reload')?.addEventListener('click',loadPackages);

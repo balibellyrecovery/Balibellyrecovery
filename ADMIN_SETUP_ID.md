@@ -9,7 +9,7 @@ Paket ini mempertahankan website sumber `bali-belly-recovery-github.zip` (31 fil
 - Media Library: upload JPG, PNG, WebP, GIF maksimum 4 MB ke `assets/uploads/`.
 - Homepage Image Manager: unggah dan atur foto Hero, Essential Package, Tablet Medication Package, dan Complete Package langsung dari Admin. ALT text dapat diatur untuk setiap gambar. Saat disimpan, Worker memperbarui `index.html` dan `content/site-settings.json` di GitHub.
 - Promo Manager: simpan status, nama promo, diskon, kode, tanggal mulai/akhir dan catatan ke `content/site-settings.json`.
-- Package Manager: simpan nama paket, harga dan deskripsi ke file pengaturan.
+- Package Manager (CRUD): tambah, lihat, edit, dan hapus paket; kelola nama, kategori, harga normal, deskripsi, komposisi, vitamin boosters, additional components, service includes, foto/ALT text, status aktif, dan urutan. Katalog pusat disimpan di `content/packages.json`.
 - Cloudflare Worker API + GitHub App untuk menyimpan konten ke repository.
 - Tidak ada AI Article Assistant, OpenAI API key, atau biaya API OpenAI.
 
@@ -17,7 +17,7 @@ Paket ini mempertahankan website sumber `bali-belly-recovery-github.zip` (31 fil
 
 ZIP berisi kode dashboard dan backend, tetapi CMS **belum dapat login atau menulis ke GitHub sampai akun GitHub dan Cloudflare Anda dikonfigurasi**. Saya tidak memiliki akses ke akun tersebut, jadi belum dapat membuat GitHub App, mengisi secret, atau menguji deployment langsung.
 
-Pengaturan gambar homepage terhubung melalui endpoint `/api/homepage/images/save`. Setelah upload gambar di tab Media / Gambar, klik **Simpan Gambar Homepage**. Worker akan memperbarui homepage di GitHub; tampilan publik berubah setelah GitHub Pages selesai deploy. Pengaturan promo masih disimpan di `content/site-settings.json` dan belum otomatis mengubah seluruh banner/harga publik. Penjadwalan artikel dan tombol hapus belum tersedia.
+Pengaturan gambar homepage terhubung melalui endpoint `/api/homepage/images/save`. Setelah upload gambar di tab Media / Gambar, klik **Simpan Gambar Homepage**. Worker akan memperbarui homepage di GitHub; tampilan publik berubah setelah GitHub Pages selesai deploy. Pengaturan promo disimpan di `content/site-settings.json` dan disinkronkan ke harga/banner serta formulir booking melalui script publik. Katalog paket pusat disimpan di `content/packages.json` dan dibaca oleh seluruh halaman yang memuat paket.
 
 Artikel yang diterbitkan menghasilkan `blog/<slug>.html`, memperbarui `blog/index.html`, `content/blog/index.json`, dan menambahkan URL ke `sitemap.xml`. Tambahkan tautan Blog ke navigasi publik bila diperlukan.
 
@@ -60,22 +60,21 @@ Instal Node.js. Jalankan terminal dari folder `workers`:
 npm install -g wrangler
 wrangler login
 wrangler secret put GH_APP_PRIVATE_KEY
-wrangler secret put CF_ACCESS_AUD
+wrangler secret put ADMIN_EMAIL
+wrangler secret put ADMIN_PASSWORD
+wrangler secret put SESSION_SECRET
 wrangler deploy
 ```
 
-Saat diminta `GH_APP_PRIVATE_KEY`, tempel seluruh isi file PEM. Untuk `CF_ACCESS_AUD`, gunakan Audience Tag aplikasi Cloudflare Access yang melindungi Worker. Catat URL Worker yang diberikan setelah deploy.
+Saat diminta `GH_APP_PRIVATE_KEY`, tempel seluruh isi file PEM. Isi `ADMIN_EMAIL` dengan email login admin, `ADMIN_PASSWORD` dengan password yang kuat, dan `SESSION_SECRET` dengan string acak rahasia minimal 32 karakter. Jangan kirim atau simpan nilai-nilai rahasia ini di HTML/JavaScript. Catat URL Worker yang diberikan setelah deploy.
 
 Tidak ada secret OpenAI dan tidak ada `OPENAI_MODEL`.
 
-### 4. Lindungi Admin dan API
+### 4. Keamanan Admin dan API
 
-Buat aplikasi Self-hosted Cloudflare Access untuk:
+Worker memiliki login admin sendiri. Endpoint login memeriksa `ADMIN_EMAIL` dan `ADMIN_PASSWORD`, lalu membuat cookie sesi bertanda tangan menggunakan `SESSION_SECRET`. Endpoint pengelolaan konten memerlukan cookie sesi tersebut dan permintaan dari origin website.
 
-- `balibellyrecovery.com/admin/*`
-- hostname Worker API.
-
-Buat policy Allow hanya untuk email administrator. Catat Audience Tag yang sesuai dan masukkan sebagai secret `CF_ACCESS_AUD`. Pastikan Worker menerima header `Cf-Access-Jwt-Assertion` dari Cloudflare Access. Jangan gunakan dashboard sebelum perlindungan Access aktif.
+Anda dapat menambahkan Cloudflare Access sebagai lapisan perlindungan tambahan pada `balibellyrecovery.com/admin/*`. Jangan memasang proteksi Access pada hostname API tanpa menguji alur `fetch` lintas-origin terlebih dahulu, karena browser admin harus dapat memanggil API dan mengirim cookie sesi. Worker pada paket ini tidak memvalidasi header JWT Cloudflare Access secara langsung.
 
 ### 5. Hubungkan dashboard
 
@@ -87,19 +86,21 @@ Buat policy Allow hanya untuk email administrator. Catat Audience Tag yang sesua
 
 ### 6. Uji dan pindah ke produksi
 
-- Simpan satu artikel Draft dan periksa commit pada `cms-staging`.
-- Upload gambar uji dan periksa `assets/uploads/`.
-- Terbitkan artikel uji setelah memastikan isi dan persetujuan reviewer.
-- Periksa `blog/<slug>.html`, `blog/index.html`, `content/blog/index.json`, `sitemap.xml` dan GitHub Pages deployment.
-- GitHub Pages hanya menampilkan branch/source yang dipilih di Settings → Pages. Untuk staging, gunakan preview branch/deployment terpisah atau ubah sementara source Pages. Setelah lolos, ubah `GH_BRANCH` ke `main`, deploy ulang Worker, lalu merge staging melalui Pull Request.
+1. Buka Admin → Manajemen Paket, edit satu paket uji, lalu simpan.
+2. Periksa commit `content/packages.json` pada branch `cms-staging`.
+3. Pastikan nama, harga, deskripsi, komposisi dan service includes berubah pada homepage, halaman Packages, halaman lokasi, dan formulir Appointment setelah GitHub Pages selesai deployment.
+4. Tambah satu paket uji, pastikan paket baru muncul pada halaman paket dan pilihan booking, lalu hapus kembali paket uji tersebut.
+5. Uji promo aktif dan nonaktif untuk memastikan harga promo dihitung dari harga normal yang baru.
+6. Uji upload gambar dan artikel, lalu periksa file terkait di repository.
+7. Setelah staging lolos, ubah `GH_BRANCH` ke `main`, deploy ulang Worker, lalu merge staging melalui Pull Request sesuai alur repository.
 
 ## Batasan dan catatan
 
 1. Website utama dan halaman SEO lokasi dipertahankan, tidak diganti.
-2. Promo/Paket Manager menyimpan JSON, belum mengubah tampilan homepage/packages secara otomatis.
-3. Editor homepage dan pengaturan kontak belum tersedia.
+2. Paket yang diedit melalui Manajemen Paket disinkronkan ke semua halaman yang menampilkan kartu paket dan pilihan paket pada formulir booking setelah Worker dan GitHub Pages selesai deploy.
+3. Editor homepage umum dan pengaturan kontak belum tersedia.
 4. Draft dan Published tersedia; penjadwalan otomatis belum tersedia.
-5. Tombol hapus artikel/media belum tersedia.
+5. Tombol hapus artikel/media belum tersedia. Paket dapat dihapus dari katalog aktif melalui Manajemen Paket.
 6. Pemeriksaan reviewer adalah kontrol alur kerja, bukan validasi klinis. Konten medis tetap harus diperiksa profesional.
 7. Perubahan publik membutuhkan GitHub Pages deployment yang sukses.
 8. Jangan menanam GitHub token/private key di JavaScript browser. Gunakan GitHub App dan Cloudflare Access.
@@ -107,7 +108,6 @@ Buat policy Allow hanya untuk email administrator. Catat Audience Tag yang sesua
 ## Troubleshooting
 
 - **401 / Access token missing**: Worker belum dilindungi Access atau header JWT tidak diteruskan.
-- **Audience tidak cocok**: `CF_ACCESS_AUD` tidak sama dengan Audience Tag aplikasi Access yang melindungi Worker.
 - **GitHub API 401/403**: periksa App ID, Installation ID, private key, permission Contents Read/Write dan instalasi App.
 - **GitHub API 404**: periksa owner, repository, branch dan path.
 - **Dashboard gagal memuat**: periksa URL Worker, CORS, login Access dan log Worker.

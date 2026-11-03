@@ -158,7 +158,49 @@ async function saveHomepageImages(env,payload){
  return{ok:true,homepageImages:saved,note:'Homepage images saved. Wait for GitHub Pages deployment.'};
 }
 
-async function publicHomepageData(env){const settings=await readSettings(env);const all=await listArticles(env);return{promo:settings.promo||{},homepageImages:settings.homepageImages||{},gallery:settings.gallery||[],articles:all.filter(a=>a.status==='published').sort((a,b)=>(b.publishedAt||'').localeCompare(a.publishedAt||'')).slice(0,12)};}
+
+async function readPackages(env){
+ try{
+  const data=JSON.parse(await readText(env,'content/packages.json'));
+  return Array.isArray(data.packages)?data.packages:[];
+ }catch(e){if(String(e).includes('404'))return[];throw e}
+}
+function cleanPackage(p,index){
+ const lines=(v,max=30)=>Array.isArray(v)?v.map(x=>String(x||'').trim().slice(0,240)).filter(Boolean).slice(0,max):[];
+ const id=String(p.id||'').trim();
+ if(!/^package-[a-z0-9-]{2,40}$/.test(id))throw new Error('ID paket tidak valid.');
+ const name=String(p.name||'').trim().slice(0,100);
+ const category=String(p.category||'').trim().slice(0,100);
+ const basePrice=Math.round(Number(p.basePrice));
+ if(!name||!category||!Number.isFinite(basePrice)||basePrice<1||basePrice>100000000)throw new Error('Nama, kategori, dan harga normal paket wajib valid.');
+ return {
+  id,name,category,basePrice,
+  description:String(p.description||'').trim().slice(0,500),
+  composition:lines(p.composition),
+  vitaminBoosters:lines(p.vitaminBoosters),
+  additionalComponents:lines(p.additionalComponents),
+  serviceIncludes:lines(p.serviceIncludes),
+  image:(()=>{const u=String(p.image||'').trim();if(u&&!u.startsWith(ORIGIN+'/assets/uploads/'))throw new Error('Gambar paket harus diunggah melalui Media Library.');return u.slice(0,500)})(),
+  imageAlt:String(p.imageAlt||'').trim().slice(0,180),
+  active:p.active!==false,
+  sortOrder:Math.max(1,Math.round(Number(p.sortOrder)||index+1))
+ };
+}
+async function savePackages(env,payload){
+ if(!Array.isArray(payload.packages)||payload.packages.length<1||payload.packages.length>40)throw new Error('Katalog harus berisi 1 sampai 40 paket.');
+ const packages=payload.packages.map(cleanPackage);
+ const ids=new Set(),names=new Set();
+ for(const p of packages){
+  if(ids.has(p.id))throw new Error('ID paket duplikat: '+p.id);ids.add(p.id);
+  const key=p.name.toLowerCase();if(names.has(key))throw new Error('Nama paket tidak boleh duplikat: '+p.name);names.add(key);
+ }
+ packages.sort((a,b)=>a.sortOrder-b.sortOrder);
+ const output={source:'admin-managed-canonical-catalogue',count:packages.length,updatedAt:new Date().toISOString(),packages};
+ await putText(env,'content/packages.json',JSON.stringify(output,null,2),'Manage Bali Belly package catalogue');
+ return{ok:true,count:packages.length,packages,note:'Package catalogue saved to GitHub. Public pages will sync package details and prices from this catalogue.'};
+}
+
+async function publicHomepageData(env){const settings=await readSettings(env);const all=await listArticles(env);const packages=await readPackages(env);return{promo:settings.promo||{},packages:packages.filter(p=>p.active!==false).sort((a,b)=>a.sortOrder-b.sortOrder),homepageImages:settings.homepageImages||{},gallery:settings.gallery||[],articles:all.filter(a=>a.status==='published').sort((a,b)=>(b.publishedAt||'').localeCompare(a.publishedAt||'')).slice(0,12)};}
 async function saveHomepageGallery(env,payload){
  const gallery=Array.isArray(payload.gallery)?payload.gallery.slice(0,8):[];
  const clean=gallery.map(x=>{const url=String(x.url||'').trim(),caption=String(x.caption||'').trim().slice(0,180),alt=String(x.alt||'').trim().slice(0,180);if(!url.startsWith(ORIGIN+'/assets/uploads/'))throw new Error('URL foto galeri tidak valid. Unggah melalui Media Library.');return{url,caption,alt};});
@@ -188,6 +230,8 @@ async function handler(req,env){
  requireSameOrigin(req);
  await verifySession(req,env);
  if(req.method==='GET'&&u.pathname==='/api/articles')return json({articles:await listArticles(env)});
+ if(req.method==='GET'&&u.pathname==='/api/packages')return json({packages:await readPackages(env)});
+ if(req.method==='POST'&&u.pathname==='/api/packages/save'){const payload=await req.json();return json(await savePackages(env,payload));}
  if(req.method==='GET'&&u.pathname==='/api/settings')return json({settings:await readSettings(env)});
  if(req.method==='POST'&&u.pathname==='/api/settings/save'){const s=await req.json();await putText(env,'content/site-settings.json',JSON.stringify(s,null,2),'Update CMS-managed site settings');return json({ok:true,settings:s,note:'Settings saved to repository. Public page components must read this JSON to reflect changes.'})}
  if(req.method==='POST'&&u.pathname==='/api/homepage/images/save'){const payload=await req.json();return json(await saveHomepageImages(env,payload))}
