@@ -38,3 +38,32 @@ Revisi ini hanya mengubah website Bali Belly Recovery. File DripWell Bali tidak 
 ## Revisi SEO title halaman area — 31 Oktober 2026
 
 Seluruh 15 halaman area menggunakan pola title yang konsisten: `Bali Belly Treatment in [Area] | Doctor Home Visit` atau `Bali Belly Treatment in [Area] | Doctor Visit` untuk wilayah gabungan. Kata `Recovery` tidak digunakan dalam SEO title halaman area. URL halaman tidak diubah. Open Graph title dan Twitter title diselaraskan jika tersedia.
+
+
+## Perbaikan filter paket — 3 November 2026
+- Saat website dibuka, hanya paket **Essential Recovery** (package-01) yang tampil; 15 paket lain disembunyikan (termasuk sebelum JavaScript selesai dimuat, lewat CSS `bbr-finder-prehide`).
+- Setiap kombinasi filter (B-Complex/Multivitamin + Hydration + Fever Reducer + Oral Medication) kini merekomendasikan tepat 1 paket. 16 kombinasi = 16 paket unik.
+- `index.html` sebelumnya tidak memuat `assets/js/package-finder.js`, sehingga beranda menampilkan semua 16 paket. Skrip kini dipasang di seluruh 23 halaman yang memiliki daftar paket.
+- Tombol "Clear filters" mengembalikan tampilan ke Essential Recovery.
+- Jika paket untuk kombinasi tertentu dinonaktifkan di admin, sistem menampilkan 1 paket terdekat (bukan kosong).
+
+
+## Pilihan paket otomatis di halaman Appointment — 3 November 2026
+- Tombol "BOOK THIS PACKAGE" membuka `appointment.html?package=package-XX` (link statis di 23 halaman sudah membawa ID paket).
+- Di halaman appointment, kolom "Choose your package" hanya menampilkan paket yang dipilih (nama + harga promo), tanpa perlu memilih ulang. Ada tautan kecil "Change package" ke halaman packages.
+- Jika halaman appointment dibuka langsung (tanpa ?package=) atau paket tidak aktif, daftar lengkap tetap tampil seperti sebelumnya.
+- Format pesan WhatsApp tidak berubah (nama paket + harga + info promo).
+
+
+## Penyeragaman font & layout — 3 November 2026
+Skala font tunggal untuk semua halaman (desktop & HP), didefinisikan di bagian bawah `assets/css/site-consistency.css`:
+- Judul: H1 56/34px · H2 41/29px · H3 & H4 (judul kartu/paket) 24/21px — Playfair Display.
+- Teks: lead 18px · isi 16px · sekunder 15px · kecil 14px · caption 13px · eyebrow 12px — DM Sans.
+- Input/select/textarea 16px (mencegah zoom otomatis di iPhone).
+Perbaikan:
+- Beranda di HP sebelumnya punya 146 aturan font-size khusus (teks 11–13px, H2 22px, H3 13px) sehingga jauh lebih kecil dari halaman lain; aturan font tersebut dihapus, ukuran lain/padding tidak diubah.
+- Ukuran font inline yang tidak standar (10/11/17/19px) dirapikan ke skala di atas pada semua halaman.
+- Kartu "Why choose us" di HP menjadi 1 kolom agar teks 16px tetap nyaman dibaca.
+- Kata miring (em) pada judul di blok CTA hijau gelap tidak lagi berwarna hijau (sebelumnya tidak terbaca).
+- Form appointment: label dan tanda * satu baris, isi input tidak lagi tebal; paket terpilih tampil sebagai kartu yang bisa membungkus teks (nama paket panjang tidak terpotong).
+- Jarak bawah section 72px → 64px agar ritme layout sama.

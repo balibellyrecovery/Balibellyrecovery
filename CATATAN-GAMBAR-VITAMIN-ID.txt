@@ -1,0 +1,39 @@
+GAMBAR PAKET OTOMATIS SESUAI VITAMIN (B-Complex / Multivitamin)
+
+Yang berubah
+- Admin > Media / Gambar > "Gambar Homepage" sekarang hanya punya 3 slot:
+  1. Hero Image
+  2. Gambar B-Complex     -> tampil di semua paket B-Complex (paket 01-08)
+  3. Gambar Multivitamin  -> tampil di semua paket Multivitamin (paket 09-16)
+  Slot lama Essential, Tablet Medication dan Complete sudah dihapus.
+- Setiap kartu paket menampilkan 1 gambar saja, ditentukan oleh vitamin paketnya.
+  Ganti gambar B-Complex/Multivitamin satu kali di Admin, semua paket terkait ikut berubah.
+- Manajemen Paket: ada pilihan baru "Jenis Vitamin" (Otomatis / B-Complex / Multivitamin).
+  "Otomatis" mengikuti kategori paket. Paket baru cukup pilih jenis vitamin, gambar langsung mengikuti.
+- Field "Image URL khusus paket" tetap ada sebagai pilihan (opsional). Jika diisi, paket itu memakai gambarnya sendiri.
+- Gambar lama Essential dipindahkan otomatis menjadi gambar B-Complex, dan gambar lama Complete menjadi gambar Multivitamin.
+
+File yang berubah
+- admin/index.html, admin/admin.js
+- workers/cms-worker.js  (WAJIB di-deploy ulang ke Cloudflare Worker, bukan hanya GitHub)
+- assets/js/promo-sync.js, assets/js/package-finder.js
+- content/site-settings.json
+- Semua halaman .html: slot gambar lama (essential/tablet/complete) dihapus.
+
+Cara memasang
+1. Upload isi folder ke GitHub seperti biasa.
+2. Cloudflare > Workers & Pages > bali-belly-recovery-cms > Edit code > ganti dengan workers/cms-worker.js > Deploy.
+   Jangan ubah Secrets/Variables.
+3. Admin > Media / Gambar: pilih gambar B-Complex dan Multivitamin, lalu klik "Simpan Gambar Homepage".
+
+PEMERIKSAAN LANJUTAN (halaman selain homepage)
+- 22 halaman memakai blok filter yang identik (index, packages, about, treatment, symptoms, covered-areas,
+  doctor-home-visit, bali-belly-near-me, dan 14 halaman area). Semuanya sudah diuji di browser:
+  awal = 1 paket (Essential Recovery) + gambar B-Complex; pilih Multivitamin = 1 paket Multivitamin + gambar Multivitamin;
+  centang Hydration/Fever Reducer = 1 paket yang sesuai; Clear filters = kembali ke Essential Recovery.
+- Perbaikan: index.html sebelumnya memuat DUA skrip filter (satu inline lama + assets/js/package-finder.js) dan DUA skrip
+  harga/banner promo, sehingga bisa berbeda perilaku dari halaman lain. Skrip inline lama sudah dihapus; filter dan promo kini
+  ditangani satu sumber yang sama di semua halaman (package-finder.js dan promo-sync.js).
+- appointment.html: tombol "BOOK THIS PACKAGE" membawa ID paket (?package=...) dan form booking menampilkan paket yang dipilih;
+  kunjungan langsung menampilkan 16 paket di dropdown.
+- Catatan perilaku (sudah ada sebelumnya, tidak diubah): jika dua paket punya komposisi sama (mis. paket 12 dan 16), filter menampilkan yang urutannya lebih dulu.
