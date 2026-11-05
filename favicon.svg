@@ -1,17 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg"
-     width="512" height="512" viewBox="0 0 512 512"
-     role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
   <title id="title">Bali Belly Recovery</title>
-  <desc id="desc">Black serif lettering on a white background inside a rounded black square border.</desc>
+  <desc id="desc">Blue medical cross surrounded by two flowing blue arcs.</desc>
   <rect width="512" height="512" fill="#ffffff"/>
-  <rect x="25" y="25" width="462" height="462" rx="78"
-        fill="none" stroke="#000000" stroke-width="10"/>
-  <g fill="#000000" text-anchor="middle"
-     font-family="Georgia, 'Times New Roman', serif">
-    <text x="256" y="232" font-size="91" font-weight="700"
-          letter-spacing="-5">Bali Belly</text>
-    <text x="256" y="322" font-size="91" font-style="italic"
-          font-weight="700" letter-spacing="-4">Recovery</text>
-  </g>
+  <!-- Outer dark-blue crescent -->
+  <path d="M448 83C399 48 340 28 276 28 143 28 35 132 35 260s108 232 241 232c48 0 93-14 131-39-34 17-72 26-113 26-126 0-228-97-228-219S168 41 294 41c58 0 111 15 154 42Z" fill="#246FB4"/>
+  <!-- Inner light-blue flowing arc -->
+  <path d="M111 239C127 145 204 82 298 82c106 0 190 82 190 184 0 77-45 144-111 174 81-22 137-95 137-183 0-111-91-201-203-201-102 0-185 76-200 183Z" fill="#4A9FD2"/>
+  <!-- Medical cross -->
+  <path d="M230 165h52a5 5 0 0 1 5 5v58h58a5 5 0 0 1 5 5v52a5 5 0 0 1-5 5h-58v58a5 5 0 0 1-5 5h-52a5 5 0 0 1-5-5v-58h-58a5 5 0 0 1-5-5v-52a5 5 0 0 1 5-5h58v-58a5 5 0 0 1 5-5Z" fill="#246FB4"/>
 </svg>
