@@ -351,3 +351,19 @@ footer .bbr-footer-links{display:flex;flex-wrap:wrap;gap:8px 20px;padding-top:18
 footer .bbr-footer-links a{color:#133E3D;font-weight:600;font-size:14px;text-decoration:none}
 footer .bbr-footer-links a:hover{text-decoration:underline;text-underline-offset:3px}
 @media(max-width:640px){footer .bbr-footer-links{gap:8px 16px}}
+
+/* Accessibility: skip link (visible only on keyboard focus) */
+.bbr-skip{position:absolute;left:-9999px;top:8px;z-index:1000;background:#133E3D;color:#fff;padding:10px 16px;border-radius:8px;font-weight:700;text-decoration:none}
+.bbr-skip:focus{left:8px;outline:3px solid #F2C14E;outline-offset:2px}
+
+/* Long-form informational sections (symptoms, doctor home visit) */
+.bbr-prose{max-width:860px;margin:0 auto;padding:8px 32px 56px;box-sizing:border-box;color:#2b3640;line-height:1.75;font-size:17px}
+.bbr-prose h2{font:600 32px/1.2 'Playfair Display',Georgia,serif;color:#133E3D;margin:44px 0 12px}
+.bbr-prose h3{font:700 19px/1.35 'DM Sans',system-ui,sans-serif;color:#133E3D;margin:26px 0 6px}
+.bbr-prose p{margin:0 0 14px}
+.bbr-prose ul{margin:0 0 16px;padding-left:22px}
+.bbr-prose li{margin:0 0 8px}
+.bbr-prose a{color:#133E3D;text-decoration:underline;text-underline-offset:3px}
+.bbr-prose .bbr-note{margin:22px 0;padding:16px 18px;border-left:4px solid #B89A5A;background:#F7F3EA;border-radius:10px;font-size:15px;line-height:1.65}
+.bbr-prose .bbr-updated{font-size:14px;color:#55606a;margin:0 0 6px}
+@media (max-width:640px){.bbr-prose{padding:4px 18px 40px;font-size:16px}.bbr-prose h2{font-size:26px}}

@@ -1,43 +1,49 @@
 # Bali Belly Recovery
 
-> Specialist Bali Belly medical service by DripWell Bali. Doctor and nurse home-visit requests are accepted 24/7; each visit is subject to address confirmation, clinical assessment and team availability.
+> On-call Bali Belly medical service for selected areas of Bali. A doctor and nurse visit your villa, hotel or holiday rental. Home-visit requests are accepted 24/7; each visit is subject to address confirmation, clinical assessment and team availability. This is a home-visit service, not a walk-in clinic and not an emergency service.
 
-## Facts
-- Searching for Bali Belly near me: send a WhatsApp location pin; a doctor and nurse come to your villa or hotel.
-- Specialty: IV drip for Bali Belly, given at your villa or hotel after a doctor assessment; doctor on call requests accepted 24/7. ("Bali Bally" is a common misspelling.)
-- Service: Bali Belly doctor and nurse home visit, IV drip and medication, medical report for travel insurance
-- Appointment requests: accepted 24/7; visit availability and estimated arrival time are confirmed for the exact address.
-- Contact: WhatsApp +62 822 2161 4966, dripwellbali@gmail.com
-- Packages (normal prices): Essential Rp 2.025.000; Bali Belly + Tablet Medication Rp 2.275.000; Complete Rp 2.525.000.
-- Active offer (valid 1-11 Nov 2026 only): 15% off the three packages with code SAVE15. Promo prices: Rp 1.721.250; Rp 1.933.750; Rp 2.146.250 respectively. After 11 Nov 2026 normal prices apply unless a new offer is shown; confirm the current offer when booking.
-- Covered areas (15): Canggu, Kerobokan & Umalas, Dalung, Seminyak, Legian, Kuta, Munggu & Cemagi, Kedungu & Tanah Lot, Tabanan, Uluwatu & Pecatu, Jimbaran, Nusa Dua & Benoa, Sanur, Denpasar, Ubud. Send a WhatsApp location pin to confirm arrival time.
-- Go to the nearest emergency room for fainting, blood in stool or vomit, severe abdominal pain, very high fever, or inability to keep fluids down.
+Key facts
+- Contact: WhatsApp +62 896 7009 8140 (send a location pin and your symptoms), balibellyrecovery@gmail.com
+- Service: doctor and nurse home visit, doctor assessment, IV drip and medication when the doctor judges them appropriate, and a medical report for travel-insurance claim support. An IV drip is not given to every patient.
+- Packages: 16 options in two groups, B-Complex (8, normal prices Rp 2.025.000 to Rp 2.749.706) and Multivitamin (8, normal prices Rp 2.966.176 to Rp 3.690.882). Any current offer is shown on the website and confirmed when booking.
+- Areas (15): Canggu, Kerobokan & Umalas, Dalung, Seminyak, Legian, Kuta, Munggu & Cemagi, Kedungu & Tanah Lot, Tabanan, Uluwatu & Pecatu, Jimbaran, Nusa Dua & Benoa, Sanur, Denpasar, Ubud.
+- Payment: Wise, Visa, Mastercard.
+- Emergencies: go to the nearest emergency room for fainting, confusion, blood in stool or vomit, severe or worsening abdominal pain, very high fever, or inability to keep fluids down.
+- Terminology: "Bali Belly" is the traveller's name for diarrhoea and stomach upset during a stay in Bali, medically usually traveller's diarrhoea. "Bali Bally" is a common misspelling.
+- Full detail for AI assistants: https://balibellyrecovery.com/llms-full.txt
 
-## Pages
-- [Blog](https://balibellyrecovery.com/blog/)
-- [index.html](https://balibellyrecovery.com/)
-- [treatment.html](https://balibellyrecovery.com/treatment.html)
-- [doctor-home-visit.html](https://balibellyrecovery.com/doctor-home-visit.html)
-- [symptoms.html](https://balibellyrecovery.com/symptoms.html)
-- [about.html](https://balibellyrecovery.com/about.html)
-- [covered-areas.html](https://balibellyrecovery.com/covered-areas.html)
-- [bali-belly-near-me.html](https://balibellyrecovery.com/bali-belly-near-me.html)
-- [appointment.html](https://balibellyrecovery.com/appointment.html)
-- [bali-belly-treatment-canggu.html](https://balibellyrecovery.com/bali-belly-treatment-canggu.html)
-- [bali-belly-treatment-kerobokan-umalas.html](https://balibellyrecovery.com/bali-belly-treatment-kerobokan-umalas.html)
-- [bali-belly-treatment-dalung.html](https://balibellyrecovery.com/bali-belly-treatment-dalung.html)
-- [bali-belly-treatment-seminyak.html](https://balibellyrecovery.com/bali-belly-treatment-seminyak.html)
-- [bali-belly-treatment-legian.html](https://balibellyrecovery.com/bali-belly-treatment-legian.html)
-- [bali-belly-treatment-kuta.html](https://balibellyrecovery.com/bali-belly-treatment-kuta.html)
-- [bali-belly-treatment-munggu-cemagi.html](https://balibellyrecovery.com/bali-belly-treatment-munggu-cemagi.html)
-- [bali-belly-treatment-kedungu-tanah-lot.html](https://balibellyrecovery.com/bali-belly-treatment-kedungu-tanah-lot.html)
-- [bali-belly-treatment-tabanan.html](https://balibellyrecovery.com/bali-belly-treatment-tabanan.html)
-- [bali-belly-treatment-uluwatu-pecatu.html](https://balibellyrecovery.com/bali-belly-treatment-uluwatu-pecatu.html)
-- [bali-belly-treatment-jimbaran.html](https://balibellyrecovery.com/bali-belly-treatment-jimbaran.html)
-- [bali-belly-treatment-nusa-dua-benoa.html](https://balibellyrecovery.com/bali-belly-treatment-nusa-dua-benoa.html)
-- [bali-belly-treatment-sanur.html](https://balibellyrecovery.com/bali-belly-treatment-sanur.html)
-- [bali-belly-treatment-denpasar.html](https://balibellyrecovery.com/bali-belly-treatment-denpasar.html)
-- [bali-belly-treatment-ubud.html](https://balibellyrecovery.com/bali-belly-treatment-ubud.html)
-- [packages.html](https://balibellyrecovery.com/packages.html)
-- [privacy.html](https://balibellyrecovery.com/privacy.html)
-- [terms.html](https://balibellyrecovery.com/terms.html)
+## Core pages
+- [Home](https://balibellyrecovery.com/): Overview of the service, packages and FAQs
+- [Packages and prices](https://balibellyrecovery.com/packages.html): All 16 packages with normal prices and inclusions
+- [Doctor home visit](https://balibellyrecovery.com/doctor-home-visit.html): How a visit works, what to have ready, FAQs
+- [Treatment](https://balibellyrecovery.com/treatment.html): What a visit can include and medical FAQs
+- [Symptoms and warning signs](https://balibellyrecovery.com/symptoms.html): Symptoms, causes, home care, dehydration signs, prevention, when to seek urgent care
+- [Bali Belly near me](https://balibellyrecovery.com/bali-belly-near-me.html): Finding help fast, how to share your location
+- [Covered areas](https://balibellyrecovery.com/covered-areas.html): All 15 service areas
+- [About](https://balibellyrecovery.com/about.html): The team, the doctor and how the service works
+- [Book an appointment](https://balibellyrecovery.com/appointment.html): Request a visit
+
+## Area pages
+- [Bali Belly treatment in Canggu](https://balibellyrecovery.com/bali-belly-treatment-canggu.html): Doctor and nurse home visits in Canggu
+- [Bali Belly treatment in Kerobokan & Umalas](https://balibellyrecovery.com/bali-belly-treatment-kerobokan-umalas.html): Doctor and nurse home visits in Kerobokan & Umalas
+- [Bali Belly treatment in Dalung](https://balibellyrecovery.com/bali-belly-treatment-dalung.html): Doctor and nurse home visits in Dalung
+- [Bali Belly treatment in Seminyak](https://balibellyrecovery.com/bali-belly-treatment-seminyak.html): Doctor and nurse home visits in Seminyak
+- [Bali Belly treatment in Legian](https://balibellyrecovery.com/bali-belly-treatment-legian.html): Doctor and nurse home visits in Legian
+- [Bali Belly treatment in Kuta](https://balibellyrecovery.com/bali-belly-treatment-kuta.html): Doctor and nurse home visits in Kuta
+- [Bali Belly treatment in Munggu & Cemagi](https://balibellyrecovery.com/bali-belly-treatment-munggu-cemagi.html): Doctor and nurse home visits in Munggu & Cemagi
+- [Bali Belly treatment in Kedungu & Tanah Lot](https://balibellyrecovery.com/bali-belly-treatment-kedungu-tanah-lot.html): Doctor and nurse home visits in Kedungu & Tanah Lot
+- [Bali Belly treatment in Tabanan](https://balibellyrecovery.com/bali-belly-treatment-tabanan.html): Doctor and nurse home visits in Tabanan
+- [Bali Belly treatment in Uluwatu & Pecatu](https://balibellyrecovery.com/bali-belly-treatment-uluwatu-pecatu.html): Doctor and nurse home visits in Uluwatu & Pecatu
+- [Bali Belly treatment in Jimbaran](https://balibellyrecovery.com/bali-belly-treatment-jimbaran.html): Doctor and nurse home visits in Jimbaran
+- [Bali Belly treatment in Nusa Dua & Benoa](https://balibellyrecovery.com/bali-belly-treatment-nusa-dua-benoa.html): Doctor and nurse home visits in Nusa Dua & Benoa
+- [Bali Belly treatment in Sanur](https://balibellyrecovery.com/bali-belly-treatment-sanur.html): Doctor and nurse home visits in Sanur
+- [Bali Belly treatment in Denpasar](https://balibellyrecovery.com/bali-belly-treatment-denpasar.html): Doctor and nurse home visits in Denpasar
+- [Bali Belly treatment in Ubud](https://balibellyrecovery.com/bali-belly-treatment-ubud.html): Doctor and nurse home visits in Ubud
+
+## Blog
+- [Blog index](https://balibellyrecovery.com/blog/): Medical guides and travel advice
+- [Bali Belly symptoms and warning signs](https://balibellyrecovery.com/blog/bali-belly-symptoms-warning-signs.html): Short guide to symptoms and when to seek medical help
+
+## Policies
+- [Privacy](https://balibellyrecovery.com/privacy.html)
+- [Terms](https://balibellyrecovery.com/terms.html)
