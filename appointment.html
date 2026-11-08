@@ -41,6 +41,7 @@ a:focus-visible{outline:3px solid #133E3D;outline-offset:3px}
 <div class="bbr-promo-banner">Bali Belly Doctor &amp; Nurse Home Visit Service</div><header class="bbr-site-header"><a class="bbr-brand" href="index.html"><span>Bali Belly</span><span>Recovery</span></a><nav aria-label="Main" class="bbr-main-nav"><a class="nav" href="index.html">Home</a><a class="nav" href="packages.html">Packages</a><a class="nav" href="doctor-home-visit.html">Doctor Home Visit</a><a class="nav" href="covered-areas.html">Covered Areas</a><a class="nav" href="blog/">Blog</a><a class="nav" href="about.html">About</a></nav><a class="btn bbr-header-booking" href="appointment.html">Book an Appointment</a></header>
 <main id="main"><section style="max-width:1200px;margin:0 auto;padding:40px 32px 48px;box-sizing:border-box;display:flex;flex-direction:column;gap:18px"><nav aria-label="Breadcrumb" style="font-size:14px;color:#55606a"><a href="index.html" style="text-decoration:underline">Home</a> › <span>Book an appointment</span></nav><span style="font-size:13px;font-weight:600;letter-spacing:.12em;color:#55606a">BOOK AN APPOINTMENT</span><h1 style="margin:0;font-size:50px;line-height:1.1;font-weight:600;letter-spacing:-.01em;max-width:860px">Book your Bali Belly <em>doctor visit</em></h1><p style="margin:0;font-size:18px;line-height:1.6;color:#4a545e;max-width:700px">Four quick details, then continue on WhatsApp. Send your location pin there and our team will confirm availability.</p></section><section style="max-width:1200px;margin:0 auto;padding:0 32px 64px;box-sizing:border-box"><div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start"><div style="flex:2 1 460px;border:1px solid #E6E1D5;border-radius:20px;padding:28px;display:block;background:#fff"><style>.af input,.af select,.af textarea{width:100%;padding:14px 16px;border:1.5px solid #cfc8b8;border-radius:12px;font:inherit;background:#fff;color:#111418}.af input:focus,.af select:focus,.af textarea:focus{outline:3px solid #133E3D;outline-offset:1px}.af input[type=radio],.af input[type=checkbox]{width:auto}</style><form class="af simple-booking" id="appt" novalidate="" style="display:grid;grid-template-columns:1fr 1fr;gap:15px">
 <label style="grid-column:1/-1">Full name <span class="req">*</span><input autocomplete="name" name="fullname" placeholder="Your name" required=""/></label>
+<label style="grid-column:1/-1">Number of patients <span class="req">*</span><input inputmode="numeric" max="50" min="1" name="patients" required="" step="1" type="number" value="1"/></label>
 <label style="grid-column:1/-1">Choose your package <span class="req">*</span>
 <select name="pkg" required=""><option value="">Select a recovery package</option><option value="not-sure">I’m not sure — please advise</option></select></label>
 <label style="grid-column:1/-1">Villa / hotel name <span class="req">*</span><input autocomplete="organization" name="place" placeholder="Where are you staying?" required=""/></label>
@@ -57,13 +58,17 @@ if(q.get('package')&&f.pkg){f.pkg.innerHTML='<option value="">Loading your selec
 f.addEventListener('submit',function(e){
  e.preventDefault();
  const err=document.getElementById('err');err.textContent='';
- const required=['fullname','pkg','place'];
+ const required=['fullname','patients','pkg','place'];
  for(const key of required){if(!f.elements[key].value.trim()){err.textContent='Please complete the required fields marked with *. ';f.elements[key].focus();return;}}
+ const pts=Number(f.patients.value);if(!Number.isInteger(pts)||pts<1||pts>50){err.textContent='Please enter a number of patients between 1 and 50.';f.patients.focus();return;}
+ const sum=document.getElementById('bbr-price-summary'),sumLine=sum&&!sum.hidden&&sum.dataset.line?sum.dataset.line:'';
  const lines=[
  'Hello Bali Belly Recovery, I would like to request a doctor visit.',
  '',
  'Name: '+f.fullname.value.trim(),
+ 'Number of patients: '+pts,
  'Package: '+f.pkg.value,
+ ...(sumLine?[sumLine]:[]),
  'Villa / hotel: '+f.place.value.trim(),
  'Location: I will share my location pin in WhatsApp.',
  'Notes: '+(f.symptoms.value.trim()||'I will explain in WhatsApp.'),

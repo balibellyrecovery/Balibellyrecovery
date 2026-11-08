@@ -9,6 +9,10 @@
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function day(value,end){if(!value)return null;const a=String(value).split('-').map(Number);if(a.length!==3||a.some(n=>!Number.isFinite(n)))return null;return new Date(a[0],a[1]-1,a[2],end?23:0,end?59:0,end?59:0);}
   function activePromo(p){if(!p||p.enabled!==true)return false;const d=Number(p.discount);if(!Number.isFinite(d)||d<=0||d>90)return false;const now=new Date(),start=day(p.start,false),end=day(p.end,true);return(!start||now>=start)&&(!end||now<=end);}
+  function activeGroup(g){if(!g||g.enabled!==true)return false;const d=Number(g.discount),m=Math.floor(Number(g.minPatients));if(!Number.isFinite(d)||d<=0||d>90||!Number.isFinite(m)||m<2)return false;const now=new Date(),start=day(g.start,false),end=day(g.end,true);return(!start||now>=start)&&(!end||now<=end);}
+  /* Dua promo berjalan bersamaan: promo umum (semua pasien) + promo grup (minimal N pasien). Diskon tidak digabung: yang terbesar dipakai. */
+  const STATE={promo:{active:false,discount:0,code:'',name:''},group:{active:false,discount:0,min:0,code:'',name:''}};
+  function priceFor(base,n){const p=STATE.promo,g=STATE.group;let d=p.active?p.discount:0,code=p.active?p.code:'',isGroup=false;if(g.active&&n>=g.min&&g.discount>d){d=g.discount;code=g.code;isGroup=true;}return{discount:d,code,isGroup,unit:base*(1-d/100)};}
   function setList(ul,items){
     if(!ul)return;
     ul.replaceChildren(...(items||[]).map(value=>{const li=document.createElement('li');li.textContent=value;return li;}));
@@ -78,8 +82,10 @@
     missing.forEach(p=>section.appendChild(makeCard(p)));
     document.dispatchEvent(new CustomEvent('bbr:packages-updated',{detail:{packages:items}}));
   }
-  function applyPromo(p){
+  function applyPromo(p,g){
     const active=activePromo(p),discount=active?Number(p.discount):0,code=active?String(p.code||'').trim():'',name=active?String(p.name||'Special Offer').trim():'';
+    const gOn=activeGroup(g),group={active:gOn,discount:gOn?Number(g.discount):0,min:gOn?Math.floor(Number(g.minPatients)):0,code:gOn?String(g.code||'').trim():'',name:gOn?String(g.name||'Group Booking Promo').trim():''};
+    STATE.promo={active,discount,code,name};STATE.group=group;
     document.querySelectorAll('.bbr-package').forEach(card=>{
       const price=card.querySelector('.bbr-new');if(!price)return;
       const base=Number(price.dataset.basePrice||0);if(!base)return;
@@ -87,20 +93,23 @@
       const badge=card.querySelector('.bbr-promo');
       if(active){old.textContent=money(base);old.hidden=false;price.textContent=money(base*(1-discount/100));if(badge){badge.hidden=false;badge.textContent='PROMO PRICE · '+discount+'% OFF';}}
       else{old.hidden=true;price.textContent=money(base);if(badge)badge.hidden=true;}
+      let gb=card.querySelector('.bbr-group-promo');
+      if(group.active){if(!gb){gb=document.createElement('span');gb.className='bbr-group-promo';price.parentNode.appendChild(gb);}gb.hidden=false;gb.textContent=group.discount+'% off for '+group.min+'+ patients: '+money(base*(1-group.discount/100))+' each';}
+      else if(gb)gb.hidden=true;
     });
-    document.querySelectorAll('.bbr-promo-banner').forEach(el=>{el.textContent=active?name+': '+discount+'% off Bali Belly packages'+(code?' with code '+code:''):FALLBACK;el.dataset.promoActive=String(active);});
+    document.querySelectorAll('.bbr-promo-banner').forEach(el=>{const parts=[];if(active)parts.push(name+': '+discount+'% off Bali Belly packages'+(code?' with code '+code:''));if(group.active)parts.push((active?'':group.name+': ')+group.discount+'% off for '+group.min+'+ patients'+(group.code?' with code '+group.code:''));el.textContent=parts.length?parts.join(' · '):FALLBACK;el.dataset.promoActive=String(active||group.active);});
     document.querySelectorAll('.bbr-hero-promo-label').forEach(el=>{el.textContent=active?discount+'% package discount':'';el.hidden=!active;});
-    document.querySelectorAll('.bbr-promo-note').forEach(el=>{el.innerHTML=active?'<strong>'+esc(name)+':</strong> '+discount+'% off'+(code?' · Use code <strong>'+esc(code)+'</strong>':'')+'. '+esc(p.note||'Offer applies to the package prices displayed on this page.'):'<strong>Package pricing:</strong> Prices shown are the standard package prices. Any additional items will be discussed before being provided.';});
-    document.documentElement.dataset.bbrPromoActive=String(active);document.documentElement.dataset.bbrPromoCode=code;document.documentElement.dataset.bbrPromoDiscount=String(discount);
-    return{active,discount,code,name};
+    document.querySelectorAll('.bbr-promo-note').forEach(el=>{const base=active?'<strong>'+esc(name)+':</strong> '+discount+'% off'+(code?' · Use code <strong>'+esc(code)+'</strong>':'')+'. '+esc(p.note||'Offer applies to the package prices displayed on this page.'):'<strong>Package pricing:</strong> Prices shown are the standard package prices. Any additional items will be discussed before being provided.';const grp=group.active?'<br><strong>'+esc(group.name)+':</strong> '+group.discount+'% off per patient when booking '+group.min+' or more patients in one appointment'+(group.code?' · Use code <strong>'+esc(group.code)+'</strong>':'')+'. '+esc((g&&g.note)||'Discounts are not combined; the larger discount applies.'):'';el.innerHTML=base+grp;});
+    document.documentElement.dataset.bbrPromoActive=String(active);document.documentElement.dataset.bbrPromoCode=code;document.documentElement.dataset.bbrPromoDiscount=String(discount);document.documentElement.dataset.bbrGroupDiscount=String(group.discount);document.documentElement.dataset.bbrGroupMin=String(group.min);document.documentElement.dataset.bbrGroupCode=group.code;
+    return{active,discount,code,name,group};
   }
   async function json(url,live){const r=await fetch(url,{headers:{Accept:'application/json'},cache:live?'no-store':'no-cache'});if(!r.ok)throw Error('Request failed: '+url);return r.json();}
-  function fillAppointment(items,promo){
+  function fillAppointmentCore(items,promo){
     const form=document.getElementById('appt'),select=form&&form.elements&&form.elements.pkg;if(!select||!Array.isArray(items))return;
     const urlPackage=new URLSearchParams(location.search).get('package');
     const legacy={'essential-recovery':'package-01','recovery-plus':'package-03','complete-recovery':'package-07','bali-belly':'package-01'};
     const active=items.filter(item=>item.active!==false).sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
-    const makeOption=item=>{const amount=promo.active?item.basePrice*(1-promo.discount/100):item.basePrice;const option=document.createElement('option');option.value=item.id;option.textContent=item.name+' — '+money(amount)+(promo.active?' ('+promo.discount+'% off'+(promo.code?', code '+promo.code:'')+')':'');option.dataset.packageName=item.name;option.dataset.currentPrice=String(Math.round(amount));return option;};
+    const makeOption=item=>{const amount=promo.active?item.basePrice*(1-promo.discount/100):item.basePrice;const option=document.createElement('option');option.value=item.id;option.textContent=item.name+' — '+money(amount)+(promo.active?' ('+promo.discount+'% off'+(promo.code?', code '+promo.code:'')+')':'');option.dataset.packageName=item.name;option.dataset.currentPrice=String(Math.round(amount));option.dataset.basePrice=String(item.basePrice||0);return option;};
     const chosen=urlPackage?active.find(item=>item.id===(legacy[urlPackage]||urlPackage)):null;
     let note=document.getElementById('bbr-selected-package-note');
     if(chosen){
@@ -129,6 +138,26 @@
     const keep=select.value;select.replaceChildren(frag);
     if([...select.options].some(o=>o.value===keep))select.value=keep;
   }
+  function patientCount(form){const el=form&&form.elements&&form.elements.patients;const n=Math.floor(Number(el&&el.value)||1);return Math.max(1,Math.min(50,n));}
+  function updateSummary(){
+    const form=document.getElementById('appt');if(!form||!form.elements.patients||!form.elements.pkg)return;
+    let box=document.getElementById('bbr-price-summary');
+    if(!box){box=document.createElement('div');box.id='bbr-price-summary';box.setAttribute('aria-live','polite');box.style.cssText='grid-column:1/-1;padding:14px 16px;border:1px solid #D9E1DE;border-radius:12px;background:#F7F9F8;color:#133E3D;font-size:14px;line-height:1.55';const lab=form.elements.pkg.closest('label');lab.parentNode.insertBefore(box,lab.nextSibling);}
+    const n=patientCount(form),opt=form.elements.pkg.selectedOptions&&form.elements.pkg.selectedOptions[0],base=opt&&opt.dataset.basePrice?Number(opt.dataset.basePrice):0;
+    if(!base){box.hidden=true;box.dataset.line='';return;}
+    const r=priceFor(base,n),total=r.unit*n,g=STATE.group;
+    let html='<strong>Estimated total: '+esc(money(total))+'</strong>'+(n>1?' ('+n+' patients × '+esc(money(r.unit))+')':'');
+    let line='Estimated total: '+money(total)+(n>1?' ('+n+' patients x '+money(r.unit)+')':'');
+    if(r.discount){const lab=r.isGroup?r.discount+'% group discount':r.discount+'% promo';html+='<br><span style="color:#334B43">'+esc(lab)+' applied'+(r.code?' · code '+esc(r.code):'')+'</span>';line+=' | '+lab+(r.code?' | Code: '+r.code:'');}
+    if(g.active&&n<g.min&&g.discount>(STATE.promo.active?STATE.promo.discount:0)){const more=g.min-n;html+='<br><span style="color:#A77937;font-weight:700">Add '+more+' more patient'+(more>1?'s':'')+' to get '+g.discount+'% off each ('+g.min+'+ patients).</span>';}
+    box.innerHTML=html;box.hidden=false;box.dataset.line=line;
+  }
+  function fillAppointment(items,promo){
+    fillAppointmentCore(items,promo);
+    const form=document.getElementById('appt');
+    if(form&&form.elements.patients&&!form.dataset.bbrSummaryBound){form.dataset.bbrSummaryBound='1';['input','change'].forEach(ev=>{form.elements.patients.addEventListener(ev,updateSummary);form.elements.pkg.addEventListener(ev,updateSummary);});}
+    updateSummary();
+  }
   try{
     /* Ketiga permintaan dimulai bersamaan (sebelumnya berurutan = 3x menunggu jaringan). */
     const settingsReq=json(SETTINGS).catch(e=>{console.warn('[Bali Belly Recovery] site-settings unavailable:',e);return null;});
@@ -139,16 +168,16 @@
     let packages=Array.isArray(catalogue.packages)?catalogue.packages:[];
     /* Promo dari site-settings.json langsung dipakai, jadi harga benar sejak tampilan pertama (API hanya menyegarkan). */
     applyPackages(packages);                       /* kartu dulu (menulis harga dasar)... */
-    let promo=applyPromo((st&&st.promo)||{});      /* ...baru promo (harga coret + harga diskon) */
+    let promo=applyPromo((st&&st.promo)||{},(st&&st.groupPromo)||{});      /* ...baru promo (harga coret + harga diskon) */
     fillAppointment(packages,promo);
     const form=document.getElementById('appt');
-    if(form&&!form.dataset.bbrSubmitSync){form.dataset.bbrSubmitSync='1';form.addEventListener('submit',function(){const sel=form.elements.pkg,option=sel&&sel.selectedOptions&&sel.selectedOptions[0];if(option&&option.dataset.packageName){const code=document.documentElement.dataset.bbrPromoCode||'',discount=Number(document.documentElement.dataset.bbrPromoDiscount||0);option.value=option.dataset.packageName+' — '+money(option.dataset.currentPrice)+(discount?' | Promo: '+discount+'%'+(code?' | Code: '+code:''):' | No active promotion');}},true);}
+    if(form&&!form.dataset.bbrSubmitSync){form.dataset.bbrSubmitSync='1';form.addEventListener('submit',function(){const sel=form.elements.pkg,option=sel&&sel.selectedOptions&&sel.selectedOptions[0];if(option&&option.dataset.packageName){const n=patientCount(form),baseP=Number(option.dataset.basePrice||0);if(baseP){const r=priceFor(baseP,n);option.value=option.dataset.packageName+' — '+money(r.unit)+(n>1?' per patient':'')+(r.discount?' | Promo: '+r.discount+'%'+(r.isGroup?' (group, '+n+' patients)':'')+(r.code?' | Code: '+r.code:''):' | No active promotion');}else{const code=document.documentElement.dataset.bbrPromoCode||'',discount=Number(document.documentElement.dataset.bbrPromoDiscount||0);option.value=option.dataset.packageName+' — '+money(option.dataset.currentPrice)+(discount?' | Promo: '+discount+'%'+(code?' | Code: '+code:''):' | No active promotion');}}},true);}
     try{
       const data=await apiReq;
       if(data.homepageImages)setVitaminImages(data.homepageImages);
       if(Array.isArray(data.packages)&&data.packages.length)packages=data.packages;
       applyPackages(packages);
-      promo=applyPromo(data.promo||{});
+      promo=applyPromo(data.promo||{},(data.groupPromo&&Object.keys(data.groupPromo).length?data.groupPromo:(st&&st.groupPromo))||{});
       fillAppointment(packages,promo);
     }catch(apiError){
       console.warn('[Bali Belly Recovery] CMS package/promo API unavailable; local catalogue is shown:',apiError);

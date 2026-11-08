@@ -15,7 +15,8 @@
   --bbr-body-font:'DM Sans',system-ui,sans-serif;
   --bbr-display-font:'Playfair Display',Georgia,serif;
 }
-html{scroll-behavior:smooth;background:var(--bbr-page)}
+html{scroll-behavior:smooth;background:var(--bbr-page);overflow-x:clip;max-width:100%}
+.bbr-gal-viewport{overflow:hidden;max-width:100%}
 body{
   margin:0;
   background:var(--bbr-page)!important;
@@ -367,3 +368,8 @@ footer .bbr-footer-links a:hover{text-decoration:underline;text-underline-offset
 .bbr-prose .bbr-note{margin:22px 0;padding:16px 18px;border-left:4px solid #B89A5A;background:#F7F3EA;border-radius:10px;font-size:15px;line-height:1.65}
 .bbr-prose .bbr-updated{font-size:14px;color:#55606a;margin:0 0 6px}
 @media (max-width:640px){.bbr-prose{padding:4px 18px 40px;font-size:16px}.bbr-prose h2{font-size:26px}}
+
+/* Group promo badge on package cards */
+.bbr-group-promo{display:block;margin-top:8px;padding:6px 10px;border-radius:8px;background:#EAF0EC;border:1px solid #D9E1DE;color:#133E3D;font-size:11px;font-weight:700;line-height:1.35;letter-spacing:.02em;text-align:right}
+.bbr-group-promo[hidden]{display:none!important}
+@media(max-width:600px){.bbr-group-promo{text-align:left}}

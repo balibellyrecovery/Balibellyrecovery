@@ -8,6 +8,16 @@
     "end": "2026-11-11",
     "note": "15% off Bali Belly packages. The promotional prices are displayed on the homepage. Confirm package inclusions and availability with the team when booking."
   },
+  "groupPromo": {
+    "enabled": true,
+    "name": "Group Booking Promo",
+    "discount": 20,
+    "minPatients": 5,
+    "code": "",
+    "start": "2026-11-01",
+    "end": "2026-11-11",
+    "note": "Discounts are not combined: the larger discount applies. Confirm patient numbers and availability with the team when booking."
+  },
   "package": {
     "name": "Bali Belly Recovery Packages",
     "price": 2025000,
