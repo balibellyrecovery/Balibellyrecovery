@@ -1,0 +1,514 @@
+{
+  "source": "admin-managed-canonical-catalogue",
+  "count": 16,
+  "packages": [
+    {
+      "id": "package-01",
+      "name": "Essential Recovery",
+      "category": "01 · B-Complex Package",
+      "basePrice": 2025000,
+      "description": "Package components with a 24/7 doctor-and-nurse home visit in our selected Bali service areas. See the inclusions below.",
+      "composition": [
+        "Electrolyte Solution",
+        "Anti-Nausea Medication",
+        "Anti-Vomiting Medication",
+        "Stomach Protector",
+        "Medication for stomach discomfort, if clinically appropriate"
+      ],
+      "vitaminBoosters": [
+        "Vitamin B Complex (B1, B6, B12)"
+      ],
+      "additionalComponents": [],
+      "serviceIncludes": [
+        "24/7 doctor and nurse home visit (delivery included; selected service areas)",
+        "Doctor Consultation",
+        "Medical report for insurance claim support",
+        "Doctor and nurse home visits available 24/7, every day"
+      ],
+      "active": true,
+      "sortOrder": 1
+    },
+    {
+      "id": "package-02",
+      "name": "Essential Fever Recovery",
+      "category": "02 · B-Complex Package",
+      "basePrice": 2377941,
+      "description": "Package components with a 24/7 doctor-and-nurse home visit in our selected Bali service areas. See the inclusions below.",
+      "composition": [
+        "Electrolyte Solution",
+        "Anti-Nausea Medication",
+        "Anti-Vomiting Medication",
+        "Stomach Protector",
+        "Medication for stomach discomfort, if clinically appropriate"
+      ],
+      "vitaminBoosters": [
+        "Vitamin B Complex (B1, B6, B12)"
+      ],
+      "additionalComponents": [
+        "Fever reducer (antipyretic)"
+      ],
+      "serviceIncludes": [
+        "24/7 doctor and nurse home visit (delivery included; selected service areas)",
+        "Doctor Consultation",
+        "Medical report for insurance claim support",
+        "Doctor and nurse home visits available 24/7, every day"
+      ],
+      "active": true,
+      "sortOrder": 2
+    },
+    {
+      "id": "package-03",
+      "name": "Hydration Recovery",
+      "category": "03 · B-Complex Package",
+      "basePrice": 2142647,
+      "description": "Package components with a 24/7 doctor-and-nurse home visit in our selected Bali service areas. See the inclusions below.",
+      "composition": [
+        "Electrolyte Solution",
+        "Anti-Nausea Medication",
+        "Anti-Vomiting Medication",
+        "Stomach Protector",
+        "Medication for stomach discomfort, if clinically appropriate"
+      ],
+      "vitaminBoosters": [
+        "Vitamin B Complex (B1, B6, B12)"
+      ],
+      "additionalComponents": [
+        "Additional Electrolyte Solution (total 1,000 ml) for hydration support"
+      ],
+      "serviceIncludes": [
+        "24/7 doctor and nurse home visit (delivery included; selected service areas)",
+        "Doctor Consultation",
+        "Medical report for insurance claim support",
+        "Doctor and nurse home visits available 24/7, every day"
+      ],
+      "active": true,
+      "sortOrder": 3
+    },
+    {
+      "id": "package-04",
+      "name": "Hydration Recovery Plus",
+      "category": "04 · B-Complex Package",
+      "basePrice": 2495588,
+      "description": "Package components with a 24/7 doctor-and-nurse home visit in our selected Bali service areas. See the inclusions below.",
+      "composition": [
+        "Electrolyte Solution",
+        "Anti-Nausea Medication",
+        "Anti-Vomiting Medication",
+        "Stomach Protector",
+        "Medication for stomach discomfort, if clinically appropriate"
+      ],
+      "vitaminBoosters": [
+        "Vitamin B Complex (B1, B6, B12)"
+      ],
+      "additionalComponents": [
+        "Additional Electrolyte Solution (total 1,000 ml) for hydration support",
+        "Fever reducer (antipyretic)"
+      ],
+      "serviceIncludes": [
+        "24/7 doctor and nurse home visit (delivery included; selected service areas)",
+        "Doctor Consultation",
+        "Medical report for insurance claim support",
+        "Doctor and nurse home visits available 24/7, every day"
+      ],
+      "active": true,
+      "sortOrder": 4
+    },
+    {
+      "id": "package-05",
+      "name": "Essential Recovery Advanced",
+      "category": "05 · B-Complex Package",
+      "basePrice": 2279118,
+      "description": "Package components with a 24/7 doctor-and-nurse home visit in our selected Bali service areas. See the inclusions below.",
+      "composition": [
+        "Electrolyte Solution",
+        "Anti-Nausea Medication",
+        "Anti-Vomiting Medication",
+        "Stomach Protector",
+        "Medication for stomach discomfort, if clinically appropriate"
+      ],
+      "vitaminBoosters": [
+        "Vitamin B Complex (B1, B6, B12)"
+      ],
+      "additionalComponents": [],
+      "serviceIncludes": [
+        "24/7 doctor and nurse home visit (delivery included; selected service areas)",
+        "Doctor Consultation",
+        "Medical report for insurance claim support",
+        "Doctor and nurse home visits available 24/7, every day"
+      ],
+      "active": true,
+      "sortOrder": 5
+    },
+    {
+      "id": "package-06",
+      "name": "Hydration Recovery Advanced",
+      "category": "06 · B-Complex Package",
+      "basePrice": 2396765,
+      "description": "Package components with a 24/7 doctor-and-nurse home visit in our selected Bali service areas. See the inclusions below.",
+      "composition": [
+        "Electrolyte Solution",
+        "Anti-Nausea Medication",
+        "Anti-Vomiting Medication",
+        "Stomach Protector",
+        "Medication for stomach discomfort, if clinically appropriate"
+      ],
+      "vitaminBoosters": [
+        "Vitamin B Complex (B1, B6, B12)"
+      ],
+      "additionalComponents": [
+        "Additional Electrolyte Solution (total 1,000 ml) for hydration support"
+      ],
+      "serviceIncludes": [
+        "24/7 doctor and nurse home visit (delivery included; selected service areas)",
+        "Doctor Consultation",
+        "Medical report for insurance claim support",
+        "Doctor and nurse home visits available 24/7, every day"
+      ],
+      "active": true,
+      "sortOrder": 6
+    },
+    {
+      "id": "package-07",
+      "name": "Essential Complete Recovery",
+      "category": "07 · B-Complex Package",
+      "basePrice": 2632059,
+      "description": "Package components with a 24/7 doctor-and-nurse home visit in our selected Bali service areas. See the inclusions below.",
+      "composition": [
+        "Electrolyte Solution",
+        "Anti-Nausea Medication",
+        "Anti-Vomiting Medication",
+        "Stomach Protector",
+        "Medication for stomach discomfort, if clinically appropriate"
+      ],
+      "vitaminBoosters": [
+        "Vitamin B Complex (B1, B6, B12)"
+      ],
+      "additionalComponents": [
+        "Fever reducer (antipyretic)"
+      ],
+      "serviceIncludes": [
+        "24/7 doctor and nurse home visit (delivery included; selected service areas)",
+        "Doctor Consultation",
+        "Medical report for insurance claim support",
+        "Doctor and nurse home visits available 24/7, every day"
+      ],
+      "active": true,
+      "sortOrder": 7
+    },
+    {
+      "id": "package-08",
+      "name": "Hydration Complete Recovery",
+      "category": "08 · B-Complex Package",
+      "basePrice": 2749706,
+      "description": "Package components with a 24/7 doctor-and-nurse home visit in our selected Bali service areas. See the inclusions below.",
+      "composition": [
+        "Electrolyte Solution",
+        "Anti-Nausea Medication",
+        "Anti-Vomiting Medication",
+        "Stomach Protector",
+        "Medication for stomach discomfort, if clinically appropriate"
+      ],
+      "vitaminBoosters": [
+        "Vitamin B Complex (B1, B6, B12)"
+      ],
+      "additionalComponents": [
+        "Additional Electrolyte Solution (total 1,000 ml) for hydration support",
+        "Fever reducer (antipyretic)"
+      ],
+      "serviceIncludes": [
+        "24/7 doctor and nurse home visit (delivery included; selected service areas)",
+        "Doctor Consultation",
+        "Medical report for insurance claim support",
+        "Doctor and nurse home visits available 24/7, every day"
+      ],
+      "active": true,
+      "sortOrder": 8
+    },
+    {
+      "id": "package-09",
+      "name": "Advanced Multivitamin Recovery",
+      "category": "09 · Multivitamin Package",
+      "basePrice": 2966176,
+      "description": "Package components with a 24/7 doctor-and-nurse home visit in our selected Bali service areas. See the inclusions below.",
+      "composition": [
+        "Electrolyte Solution",
+        "Anti-Nausea Medication",
+        "Anti-Vomiting Medication",
+        "Stomach Protector",
+        "Medication for stomach discomfort, if clinically appropriate"
+      ],
+      "vitaminBoosters": [
+        "Vitamin B1",
+        "Vitamin B2",
+        "Vitamin B3",
+        "Vitamin B5",
+        "Vitamin B6",
+        "Vitamin B9",
+        "Vitamin B12",
+        "Vitamin C",
+        "Biotin"
+      ],
+      "additionalComponents": [],
+      "serviceIncludes": [
+        "24/7 doctor and nurse home visit (delivery included; selected service areas)",
+        "Doctor Consultation",
+        "Medical report for insurance claim support",
+        "Doctor and nurse home visits available 24/7, every day"
+      ],
+      "active": true,
+      "sortOrder": 9
+    },
+    {
+      "id": "package-10",
+      "name": "Advanced Multivitamin Recovery Plus",
+      "category": "10 · Multivitamin Package",
+      "basePrice": 3083824,
+      "description": "Package components with a 24/7 doctor-and-nurse home visit in our selected Bali service areas. See the inclusions below.",
+      "composition": [
+        "Electrolyte Solution",
+        "Anti-Nausea Medication",
+        "Anti-Vomiting Medication",
+        "Stomach Protector",
+        "Medication for stomach discomfort, if clinically appropriate"
+      ],
+      "vitaminBoosters": [
+        "Vitamin B1",
+        "Vitamin B2",
+        "Vitamin B3",
+        "Vitamin B5",
+        "Vitamin B6",
+        "Vitamin B9",
+        "Vitamin B12",
+        "Vitamin C",
+        "Biotin"
+      ],
+      "additionalComponents": [
+        "Additional Electrolyte Solution (total 1,000 ml) for hydration support"
+      ],
+      "serviceIncludes": [
+        "24/7 doctor and nurse home visit (delivery included; selected service areas)",
+        "Doctor Consultation",
+        "Medical report for insurance claim support",
+        "Doctor and nurse home visits available 24/7, every day"
+      ],
+      "active": true,
+      "sortOrder": 10
+    },
+    {
+      "id": "package-11",
+      "name": "Advanced Multivitamin Recovery Extra",
+      "category": "11 · Multivitamin Package",
+      "basePrice": 3319118,
+      "description": "Package components with a 24/7 doctor-and-nurse home visit in our selected Bali service areas. See the inclusions below.",
+      "composition": [
+        "Electrolyte Solution",
+        "Anti-Nausea Medication",
+        "Anti-Vomiting Medication",
+        "Stomach Protector",
+        "Medication for stomach discomfort, if clinically appropriate"
+      ],
+      "vitaminBoosters": [
+        "Vitamin B1",
+        "Vitamin B2",
+        "Vitamin B3",
+        "Vitamin B5",
+        "Vitamin B6",
+        "Vitamin B9",
+        "Vitamin B12",
+        "Vitamin C",
+        "Biotin"
+      ],
+      "additionalComponents": [
+        "Fever reducer (antipyretic)"
+      ],
+      "serviceIncludes": [
+        "24/7 doctor and nurse home visit (delivery included; selected service areas)",
+        "Doctor Consultation",
+        "Medical report for insurance claim support",
+        "Doctor and nurse home visits available 24/7, every day"
+      ],
+      "active": true,
+      "sortOrder": 11
+    },
+    {
+      "id": "package-12",
+      "name": "Advanced Multivitamin Recovery Extra Plus",
+      "category": "12 · Multivitamin Package",
+      "basePrice": 3436765,
+      "description": "Package components with a 24/7 doctor-and-nurse home visit in our selected Bali service areas. See the inclusions below.",
+      "composition": [
+        "Electrolyte Solution",
+        "Anti-Nausea Medication",
+        "Anti-Vomiting Medication",
+        "Stomach Protector",
+        "Medication for stomach discomfort, if clinically appropriate"
+      ],
+      "vitaminBoosters": [
+        "Vitamin B1",
+        "Vitamin B2",
+        "Vitamin B3",
+        "Vitamin B5",
+        "Vitamin B6",
+        "Vitamin B9",
+        "Vitamin B12",
+        "Vitamin C",
+        "Biotin"
+      ],
+      "additionalComponents": [
+        "Additional Electrolyte Solution (total 1,000 ml) for hydration support",
+        "Fever reducer (antipyretic)"
+      ],
+      "serviceIncludes": [
+        "24/7 doctor and nurse home visit (delivery included; selected service areas)",
+        "Doctor Consultation",
+        "Medical report for insurance claim support",
+        "Doctor and nurse home visits available 24/7, every day"
+      ],
+      "active": true,
+      "sortOrder": 12
+    },
+    {
+      "id": "package-13",
+      "name": "Advanced Multivitamin Recovery Care",
+      "category": "13 · Multivitamin Package",
+      "basePrice": 3220294,
+      "description": "Package components with a 24/7 doctor-and-nurse home visit in our selected Bali service areas. See the inclusions below.",
+      "composition": [
+        "Electrolyte Solution",
+        "Anti-Nausea Medication",
+        "Anti-Vomiting Medication",
+        "Stomach Protector",
+        "Medication for stomach discomfort, if clinically appropriate"
+      ],
+      "vitaminBoosters": [
+        "Vitamin B1",
+        "Vitamin B2",
+        "Vitamin B3",
+        "Vitamin B5",
+        "Vitamin B6",
+        "Vitamin B9",
+        "Vitamin B12",
+        "Vitamin C",
+        "Biotin"
+      ],
+      "additionalComponents": [],
+      "serviceIncludes": [
+        "24/7 doctor and nurse home visit (delivery included; selected service areas)",
+        "Doctor Consultation",
+        "Medical report for insurance claim support",
+        "Doctor and nurse home visits available 24/7, every day"
+      ],
+      "active": true,
+      "sortOrder": 13
+    },
+    {
+      "id": "package-14",
+      "name": "Advanced Multivitamin Recovery Care Plus",
+      "category": "14 · Multivitamin Package",
+      "basePrice": 3337941,
+      "description": "Package components with a 24/7 doctor-and-nurse home visit in our selected Bali service areas. See the inclusions below.",
+      "composition": [
+        "Electrolyte Solution",
+        "Anti-Nausea Medication",
+        "Anti-Vomiting Medication",
+        "Stomach Protector",
+        "Medication for stomach discomfort, if clinically appropriate"
+      ],
+      "vitaminBoosters": [
+        "Vitamin B1",
+        "Vitamin B2",
+        "Vitamin B3",
+        "Vitamin B5",
+        "Vitamin B6",
+        "Vitamin B9",
+        "Vitamin B12",
+        "Vitamin C",
+        "Biotin"
+      ],
+      "additionalComponents": [
+        "Additional Electrolyte Solution (total 1,000 ml) for hydration support"
+      ],
+      "serviceIncludes": [
+        "24/7 doctor and nurse home visit (delivery included; selected service areas)",
+        "Doctor Consultation",
+        "Medical report for insurance claim support",
+        "Doctor and nurse home visits available 24/7, every day"
+      ],
+      "active": true,
+      "sortOrder": 14
+    },
+    {
+      "id": "package-15",
+      "name": "Ultimate Multivitamin Recovery",
+      "category": "15 · Multivitamin Package",
+      "basePrice": 3573235,
+      "description": "Package components with a 24/7 doctor-and-nurse home visit in our selected Bali service areas. See the inclusions below.",
+      "composition": [
+        "Electrolyte Solution",
+        "Anti-Nausea Medication",
+        "Anti-Vomiting Medication",
+        "Stomach Protector",
+        "Medication for stomach discomfort, if clinically appropriate"
+      ],
+      "vitaminBoosters": [
+        "Vitamin B1",
+        "Vitamin B2",
+        "Vitamin B3",
+        "Vitamin B5",
+        "Vitamin B6",
+        "Vitamin B9",
+        "Vitamin B12",
+        "Vitamin C",
+        "Biotin"
+      ],
+      "additionalComponents": [
+        "Fever reducer (antipyretic)"
+      ],
+      "serviceIncludes": [
+        "24/7 doctor and nurse home visit (delivery included; selected service areas)",
+        "Doctor Consultation",
+        "Medical report for insurance claim support",
+        "Doctor and nurse home visits available 24/7, every day"
+      ],
+      "active": true,
+      "sortOrder": 15
+    },
+    {
+      "id": "package-16",
+      "name": "Ultimate Multivitamin Recovery Plus",
+      "category": "16 · Multivitamin Package",
+      "basePrice": 3690882,
+      "description": "Package components with a 24/7 doctor-and-nurse home visit in our selected Bali service areas. See the inclusions below.",
+      "composition": [
+        "Electrolyte Solution",
+        "Anti-Nausea Medication",
+        "Anti-Vomiting Medication",
+        "Stomach Protector",
+        "Medication for stomach discomfort, if clinically appropriate"
+      ],
+      "vitaminBoosters": [
+        "Vitamin B1",
+        "Vitamin B2",
+        "Vitamin B3",
+        "Vitamin B5",
+        "Vitamin B6",
+        "Vitamin B9",
+        "Vitamin B12",
+        "Vitamin C",
+        "Biotin"
+      ],
+      "additionalComponents": [
+        "Additional Electrolyte Solution (total 1,000 ml) for hydration support",
+        "Fever reducer (antipyretic)"
+      ],
+      "serviceIncludes": [
+        "24/7 doctor and nurse home visit (delivery included; selected service areas)",
+        "Doctor Consultation",
+        "Medical report for insurance claim support",
+        "Doctor and nurse home visits available 24/7, every day"
+      ],
+      "active": true,
+      "sortOrder": 16
+    }
+  ]
+}
