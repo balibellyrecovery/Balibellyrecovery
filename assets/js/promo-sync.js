@@ -79,7 +79,8 @@
     existing.forEach(card=>{const p=map.get(card.dataset.packageId);if(p)updateCard(card,p);else{card.dataset.packageActive='false';card.hidden=true;}});
     const present=new Set(existing.map(c=>c.dataset.packageId));
     const missing=items.filter(p=>!present.has(p.id));
-    missing.forEach(p=>section.appendChild(makeCard(p)));
+    const anchor=section.querySelector('.bbr-promo-note')||section.querySelector('#bbr-package-finder');
+    missing.forEach(p=>anchor?section.insertBefore(makeCard(p),anchor):section.appendChild(makeCard(p)));
     document.dispatchEvent(new CustomEvent('bbr:packages-updated',{detail:{packages:items}}));
   }
   function applyPromo(p,g){
