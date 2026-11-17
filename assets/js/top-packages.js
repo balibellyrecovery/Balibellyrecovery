@@ -23,8 +23,10 @@
   const section=document.createElement('section');
   section.className='bbr-packages bbr-top-packages';section.id='packages';
   section.setAttribute('aria-label','Bali Belly recovery packages');
-  section.innerHTML='<div class="bbr-promo-note"></div>'+FINDER;
-  main.insertBefore(section,main.firstChild);
+  section.innerHTML='<span class="bbr-top-kicker" style="display:block;font-size:13px;font-weight:600;letter-spacing:.12em;color:#55606a;margin:0 0 4px">BALI BELLY DOCTOR &amp; NURSE HOME VISIT SERVICE</span>'+'<div class="bbr-promo-note"></div>'+FINDER;
+  const h1=main.querySelector('h1');const hero=h1&&h1.closest('section');
+  if(hero&&main.contains(hero)){const k=section.querySelector('.bbr-top-kicker');if(k)k.remove();hero.after(section);}
+  else main.insertBefore(section,main.firstChild);
 
   /* package-finder.js dimuat setelah kerangka ada; ia mendengarkan event bbr:packages-updated. */
   const f=document.createElement('script');f.src=base+'js/package-finder.js';f.defer=true;document.body.appendChild(f);
